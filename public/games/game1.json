@@ -1,0 +1,114 @@
+{
+  "id": "game1",
+  "title": "Narnia Jeopardy · Game 1",
+  "rules": {
+    "restricted": "Youngest teammate answers alone. No help!",
+    "kids": "Youngest player on each team only",
+    "confer": "Teams may confer, but the youngest says the answer"
+  },
+  "rounds": [
+    {
+      "name": "Jeopardy!",
+      "values": [200, 400, 600, 800, 1000],
+      "restricted": [200, 400],
+      "categories": [
+        { "name": "Before They Were Kings", "clues": [
+          { "q": "Before he was a prince of Archenland, this boy lived with a fisherman.", "a": "Who is Shasta (Cor)?" },
+          { "q": "Before becoming Narnia's first king, Frank drove one of these in London.", "a": "What is a cab?" },
+          { "q": "Before she was a queen, Aravis was this kind of Calormene noblewoman.", "a": "What is a Tarkheena?" },
+          { "q": "Before he was king, Caspian was secretly taught the history of Old Narnia by this tutor.", "a": "Who is Doctor Cornelius?" },
+          { "q": "Before he was king, Rilian spent ten years under the witch's spell as this.", "a": "What is the Black Knight?" }
+        ]},
+        { "name": "Creatures Great and Small", "kids": true, "clues": [
+          { "q": "The brave mouse with a sword who sails to the end of the world.", "a": "Who is Reepicheep?" },
+          { "q": "The talking horse who carries Shasta.", "a": "Who is Bree?" },
+          { "q": "The faun Lucy meets at the lamppost.", "a": "Who is Mr Tumnus?" },
+          { "q": "The couple who hide the children in their dam and give them dinner.", "a": "Who are Mr and Mrs Beaver?" },
+          { "q": "The owl who takes Jill and Eustace to a midnight parliament.", "a": "Who is Glimfeather?" }
+        ]},
+        { "name": "Ways Into Narnia", "clues": [
+          { "q": "Lucy first gets in through this piece of furniture.", "a": "What is a wardrobe?" },
+          { "q": "In Prince Caspian, the children are pulled into Narnia while waiting at one of these.", "a": "What is a railway station?" },
+          { "q": "In The Voyage of the Dawn Treader, Edmund, Lucy and Eustace fall into one of these hanging on the wall.", "a": "What is a painting (of a ship)?" },
+          { "q": "Digory and Polly use these, coloured yellow and green, to travel between worlds.", "a": "What are the magic rings?" },
+          { "q": "The wood full of pools that Digory and Polly pass through between worlds.", "a": "What is the Wood between the Worlds?" }
+        ]},
+        { "name": "Villains", "clues": [
+          { "q": "She makes it always winter and never Christmas.", "a": "Who is the White Witch?" },
+          { "q": "Caspian's wicked uncle, who seized the throne.", "a": "Who is Miraz?" },
+          { "q": "The ape who dresses a donkey in a lion skin.", "a": "Who is Shift?" },
+          { "q": "The Calormene prince who is turned into a donkey.", "a": "Who is Rabadash?", "dd": true },
+          { "q": "The White Witch's real name.", "a": "What is Jadis?" }
+        ]},
+        { "name": "Name That Island", "clues": [
+          { "q": "Eustace turns into a dragon here.", "a": "What is Dragon Island?" },
+          { "q": "Slave traders capture Caspian and his friends here.", "a": "What are the Lone Islands?" },
+          { "q": "Lucy reads the magician's book on this island.", "a": "What is the Island of the Voices?" },
+          { "q": "A pool here turns anything into gold.", "a": "What is Deathwater Island?" },
+          { "q": "Three lost lords lie asleep at Aslan's Table on this island, home of a retired star.", "a": "What is Ramandu's Island?" }
+        ]},
+        { "name": "Food in Narnia", "clues": [
+          { "q": "The sweet the White Witch gives Edmund.", "a": "What is Turkish Delight?" },
+          { "q": "Mr Beaver catches these through a hole in the ice for dinner.", "a": "What are fish (trout)?" },
+          { "q": "Digory brings home one of these, silver in colour, to heal his mother.", "a": "What is an apple?" },
+          { "q": "At Harfang, Jill and Eustace discover they are meant to be the main ingredient in this.", "a": "What is man pie?" },
+          { "q": "Planted in Narnia's new soil, this sweet grows into a tree.", "a": "What is toffee?" }
+        ]}
+      ]
+    },
+    {
+      "name": "Double Jeopardy!",
+      "values": [400, 800, 1200, 1600, 2000],
+      "restricted": [400, 800],
+      "categories": [
+        { "name": "The Silver Chair", "clues": [
+          { "q": "The gloomy Marsh-wiggle who guides Jill and Eustace.", "a": "Who is Puddleglum?" },
+          { "q": "The lost prince, son of Caspian.", "a": "Who is Rilian?" },
+          { "q": "The castle of the gentle giants, who aren't so gentle.", "a": "What is Harfang?" },
+          { "q": "The underground kingdom ruled by the Lady of the Green Kirtle.", "a": "What is Underland?", "dd": true },
+          { "q": "The deeper land below Underland where the gnomes come from.", "a": "What is Bism?" }
+        ]},
+        { "name": "The Horse and His Boy", "clues": [
+          { "q": "Shasta's real name.", "a": "What is Cor?" },
+          { "q": "The talking mare who carries Aravis.", "a": "Who is Hwin?" },
+          { "q": "The capital city of Calormen.", "a": "What is Tashbaan?" },
+          { "q": "The old Tarkaan Aravis is supposed to marry.", "a": "Who is Ahoshta?" },
+          { "q": "The Narnians' ship they escape Tashbaan on.", "a": "What is the Splendour Hyaline?" }
+        ]},
+        { "name": "Who Said It?", "clues": [
+          { "q": "Told the children that Aslan isn't safe, but he is good.", "a": "Who is Mr Beaver?" },
+          { "q": "Told the witch he'd go on living like a Narnian even if there were no Narnia.", "a": "Who is Puddleglum?" },
+          { "q": "At the Stone Table, claimed Edmund's life under the Deep Magic.", "a": "Who is the White Witch?" },
+          { "q": "Told Lucy and Edmund that he is known by another name in their world.", "a": "Who is Aslan?" },
+          { "q": "Wondered aloud what they teach children in schools these days, since nobody seems to learn logic.", "a": "Who is Professor Kirke?" }
+        ]},
+        { "name": "Aslan", "kids": true, "clues": [
+          { "q": "Aslan is this kind of animal.", "a": "What is a lion?" },
+          { "q": "Where Aslan dies in place of Edmund.", "a": "What is the Stone Table?" },
+          { "q": "Aslan's father.", "a": "Who is the Emperor-beyond-the-Sea?" },
+          { "q": "At the end of the world in the Dawn Treader, Aslan first appears as this animal.", "a": "What is a lamb?" },
+          { "q": "Aslan creates Narnia by doing this.", "a": "What is singing?" }
+        ]},
+        { "name": "Witches and Wizards", "clues": [
+          { "q": "Digory's uncle, who makes the magic rings.", "a": "Who is Uncle Andrew?" },
+          { "q": "The magician who rules the Dufflepuds.", "a": "Who is Coriakin?" },
+          { "q": "In Prince Caspian, Nikabrik brings a hag and one of these to the council.", "a": "What is a werewolf?" },
+          { "q": "The Lady of the Green Kirtle turns into this.", "a": "What is a serpent?" },
+          { "q": "Uncle Andrew's godmother, who left him a box of dust from Atlantis.", "a": "Who is Mrs Lefay?" }
+        ]},
+        { "name": "Narnian Geography", "clues": [
+          { "q": "The castle where the Pevensies are crowned.", "a": "What is Cair Paravel?" },
+          { "q": "The country just south of Narnia, ruled by King Lune.", "a": "What is Archenland?" },
+          { "q": "The ancient mound built over the Stone Table.", "a": "What is Aslan's How?", "dd": true },
+          { "q": "The river crossing where Aslan's army goes in Prince Caspian, at the Fords of this place.", "a": "What is Beruna?" },
+          { "q": "The wild woodland where the lamppost stands.", "a": "What is Lantern Waste?" }
+        ]}
+      ]
+    }
+  ],
+  "final": {
+    "category": "Magic",
+    "clue": "The White Witch knew the Deep Magic, but she didn't know about this, which brought Aslan back to life.",
+    "answer": "What is the Deeper Magic from before the dawn of time?"
+  }
+}

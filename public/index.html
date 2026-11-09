@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeopardy Night</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #0b1bd6; --blue2: #0812a8; --deep: #03075a; --gold: #f2bd4b; --ink: #fff;
+    --right: #22b455; --wrong: #d83a33;
+    --safe: 2.5vmin; /* margin so old TVs don't crop the edges */
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #000; color: var(--ink); overflow: hidden; }
+  body { font-family: Oswald, "Arial Narrow", Arial, sans-serif; }
+  #app { position: absolute; inset: var(--safe); display: flex; flex-direction: column; gap: 1.2vmin; }
+  #stage { flex: 1; min-height: 0; position: relative; }
+  #bar { height: 12vh; display: flex; gap: 1vmin; }
+  .hidden { display: none !important; }
+
+  button { font-family: inherit; color: inherit; cursor: pointer; }
+  button:focus, input:focus { outline: none; }
+  .btn {
+    font-size: 2vw; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+    padding: 1.2vh 2vw; border-radius: .8vmin; background: #ffffff18; border: .35vmin solid #ffffff55;
+    min-height: 7.5vh; color: #fff;
+  }
+  .btn.gold { background: var(--gold); color: #1a1200; border-color: var(--gold); }
+  .btn.right { background: var(--right); border-color: var(--right); }
+  .btn.wrong { background: var(--wrong); border-color: var(--wrong); }
+  .btn.small { font-size: 1.4vw; min-height: 5.5vh; padding: .8vh 1.2vw; }
+  .btn:disabled { opacity: .3; }
+  .btn:focus, .tile:focus, .gamebtn:focus, input:focus {
+    box-shadow: 0 0 0 .5vmin #fff, 0 0 0 1.1vmin var(--gold);
+  }
+  input.tin { font-size: 2vw; padding: 1.2vh 1vw; border-radius: .8vmin; border: 0; width: 30vw; font-family: system-ui, sans-serif; }
+
+  /* ---------- full-screen panels ---------- */
+  .screen {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2.4vh; text-align: center; padding: 3vh 3vw;
+    background: radial-gradient(ellipse at center, #1324e8 0%, var(--blue2) 55%, var(--deep) 100%);
+  }
+  .title { font-size: 6vw; font-weight: 700; text-transform: uppercase; line-height: 1; text-shadow: .4vw .4vw 0 #000; margin: 0; }
+  .sub { font-size: 2.2vw; color: #ffffffd9; margin: 0; }
+  .gold { color: var(--gold); }
+  .row { display: flex; gap: 1.5vw; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .gamebtn { font-size: 2.6vw; font-weight: 700; text-transform: uppercase; padding: 2vh 3vw; border-radius: 1vmin; background: var(--blue); border: .4vmin solid var(--gold); }
+  .note { font-size: 1.5vw; color: #ffffffb3; font-family: system-ui, sans-serif; }
+
+  /* ---------- lobby ---------- */
+  .joinbox { background: #0006; border-radius: 1.5vmin; padding: 2vh 3vw; display: flex; flex-direction: column; gap: 1vh; }
+  .joinbox .url { font-size: 2.4vw; color: #fff; font-family: system-ui, sans-serif; }
+  .joinbox .code { font-size: 8vw; letter-spacing: 1.5vw; color: var(--gold); font-weight: 700; line-height: 1; text-shadow: .4vw .4vw 0 #000; }
+  .lteams { display: flex; gap: 1.2vw; flex-wrap: wrap; justify-content: center; min-height: 9vh; align-items: center; }
+  .lteam { background: var(--blue); border: .3vmin solid #fff5; border-radius: 1vmin; padding: 1vh 1.6vw; font-size: 2.2vw; font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 1vw; animation: pop .35s; }
+  .lteam small { font-size: 1.2vw; color: #ffffffb3; font-weight: 500; text-transform: none; }
+  .lteam .x { font-size: 1.2vw; min-height: 0; padding: .4vh .7vw; }
+
+  /* ---------- board ---------- */
+  .board { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: 1.35fr repeat(5, 1fr); gap: .7vmin; background: #000; }
+  .cat {
+    background: var(--blue); display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 0 .8vw; font-weight: 700; font-size: 1.75vw; line-height: 1.1;
+    text-transform: uppercase; text-shadow: .15vw .15vw 0 #000; border-bottom: .6vmin solid #000;
+  }
+  .cat small { font-size: .95vw; color: var(--gold); margin-top: .6vh; font-weight: 500; text-shadow: none; letter-spacing: .05em; }
+  /* Categories start covered, like the show, and flip open one click at a time. */
+  .cat.cover { border: 0; border-bottom: .6vmin solid #000; color: var(--gold); font-style: italic; font-size: 1.9vw;
+    background: radial-gradient(ellipse at center, #1a2cf2 0%, var(--blue) 60%, var(--blue2) 100%); text-shadow: .2vw .2vw 0 #000; }
+  .cat.cover:focus { box-shadow: inset 0 0 0 .5vmin #fff, inset 0 0 0 1.1vmin var(--gold); }
+  .cat.flip { animation: flip .5s ease-out; }
+  @keyframes flip { from { transform: rotateX(90deg); } }
+  .tile:disabled { cursor: default; }
+  .tile { background: var(--blue); border: 0; color: var(--gold); font-weight: 700; font-size: 4vw; text-shadow: .25vw .25vw 0 #000; padding: 0; }
+  .tile.used { background: var(--deep); cursor: default; }
+  .tile.fill { animation: fill .3s both; }
+  @keyframes fill { from { opacity: 0; transform: scale(.5); } }
+
+  /* ---------- clue ---------- */
+  .top { display: flex; width: 100%; justify-content: space-between; align-items: baseline; font-size: 1.8vw; text-transform: uppercase; color: #ffffffcc; }
+  .top .val { color: var(--gold); font-weight: 700; font-size: 2.4vw; }
+  .rule { font-size: 1.5vw; background: #0007; padding: .6vh 1.6vw; border-radius: 99px; color: var(--gold); }
+  .cluetext {
+    flex: 1; display: flex; align-items: center; justify-content: center; max-width: 88%;
+    font-family: "Libre Baskerville", Georgia, serif; font-weight: 700; text-transform: uppercase;
+    font-size: 3.3vw; line-height: 1.35; text-shadow: .22vw .22vw 0 #000; margin: 0;
+  }
+  .answer { font-family: "Libre Baskerville", Georgia, serif; color: var(--gold); font-size: 2.5vw; text-shadow: .2vw .2vw 0 #000; margin: 0; animation: pop .3s; }
+  .controls { display: flex; flex-wrap: wrap; gap: 1vw; justify-content: center; align-items: center; min-height: 9vh; }
+  .judge { display: flex; align-items: center; gap: .6vw; background: #0006; padding: .8vh .8vw; border-radius: 1vmin; }
+  .judge .tn { font-size: 1.7vw; font-weight: 700; text-transform: uppercase; padding: 0 .6vw; max-width: 21vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .judge.hot { background: var(--gold); color: #1a1200; }
+  .judge .btn { font-size: 1.7vw; min-width: 5.5vw; }
+  .banner { font-size: 3.6vw; font-weight: 700; text-transform: uppercase; color: #1a1200; background: var(--gold); padding: .8vh 3vw; border-radius: 1vmin; animation: pop .3s; }
+  .openb { font-size: 2.6vw; font-weight: 700; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 1vh; }
+  .track { width: 40vw; height: 1.4vh; background: #0007; border-radius: 99px; overflow: hidden; }
+  .track i { display: block; height: 100%; width: 100%; background: var(--right); }
+  .openb .track i { animation: drain 20s linear forwards; }
+  @keyframes drain { from { width: 100%; } to { width: 0; } }
+  @keyframes pop { from { transform: scale(.4); opacity: 0; } }
+
+  .dd { font-size: 9vw; font-weight: 700; color: var(--gold); text-shadow: .5vw .5vw 0 #000; text-transform: uppercase; line-height: 1; animation: ddspin 1.2s cubic-bezier(.2,.9,.3,1.15); margin: 0; }
+  @keyframes ddspin { from { transform: scale(.05) rotate(-720deg); } }
+  .amt { font-size: 7vw; color: var(--gold); font-weight: 700; text-shadow: .4vw .4vw 0 #000; line-height: 1; }
+  .wait { font-size: 2vw; color: #ffffffcc; animation: blink 1.4s infinite; }
+  @keyframes blink { 50% { opacity: .45; } }
+
+  /* ---------- final ---------- */
+  .frows { display: flex; flex-direction: column; justify-content: center; gap: 1.4vh; width: 90%; flex: 1; }
+  .frow { display: grid; grid-template-columns: 18vw 1fr auto; align-items: center; gap: 1.5vw; background: #0006; border-radius: 1vmin; padding: 1.2vh 1.5vw; text-align: left; }
+  .frow .tn { font-size: 2vw; font-weight: 700; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .frow .tn small { display: block; font-size: 1.3vw; color: #ffffffb3; font-weight: 500; }
+  .frow .their { font-family: "Libre Baskerville", Georgia, serif; font-size: 1.9vw; }
+  .frow .res { font-size: 2.2vw; font-weight: 700; }
+  .stepper { display: flex; gap: .5vw; align-items: center; }
+  .stepper .v { font-size: 2.4vw; color: var(--gold); font-weight: 700; min-width: 9vw; text-align: center; }
+  .status { font-size: 1.9vw; display: flex; gap: 2vw; flex-wrap: wrap; justify-content: center; }
+  .status span { background: #0006; padding: .6vh 1.4vw; border-radius: 99px; }
+  .status .in { color: #9ff0b4; }
+  .clockbar { width: 60vw; }
+  .clockbar i { background: var(--gold); transition: width .25s linear; }
+  .bigclock { font-size: 4vw; font-weight: 700; color: var(--gold); }
+
+  /* ---------- score bar ---------- */
+  .team { flex: 1; background: var(--blue); border-radius: 1vmin; display: flex; flex-direction: column; align-items: center; justify-content: center; border: .4vmin solid transparent; min-width: 0; position: relative; }
+  .team .n { font-size: 1.6vw; text-transform: uppercase; font-weight: 700; max-width: 95%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .team .s { font-size: 3vw; font-weight: 700; line-height: 1.1; }
+  .team .s.neg { color: #ff7a72; }
+  .team .meta { font-size: 1vw; color: #ffffffa8; }
+  .team.hot { border-color: var(--gold); box-shadow: 0 0 2.5vmin var(--gold); background: #1a2af0; }
+  .team .star { position: absolute; top: .4vh; left: .6vw; color: var(--gold); font-size: 1.6vw; }
+  .side { display: flex; flex-direction: column; gap: .8vmin; width: 12vw; }
+  .room { flex: 1; background: #ffffff12; border-radius: 1vmin; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1vw; color: #ffffffb3; }
+  .room b { font-size: 2.2vw; letter-spacing: .3vw; color: var(--gold); line-height: 1; }
+  .side .btn { min-height: 0; flex: 1; font-size: 1.4vw; padding: 0; }
+
+  /* ---------- host panel ---------- */
+  .overlay { position: fixed; inset: 0; background: #000d; display: flex; align-items: center; justify-content: center; z-index: 10; }
+  .modal { background: var(--deep); border: .4vmin solid var(--gold); border-radius: 1.5vmin; padding: 3vh 3vw; display: flex; flex-direction: column; gap: 1.8vh; min-width: 55vw; }
+  .modal h2 { margin: 0; font-size: 3vw; text-transform: uppercase; color: var(--gold); }
+  .adj { display: flex; align-items: center; gap: 1vw; font-size: 2vw; }
+  .adj .tn { flex: 1; text-transform: uppercase; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .adj .sc { min-width: 10vw; text-align: right; color: var(--gold); font-weight: 700; }
+
+  #toast { position: fixed; left: 50%; bottom: 16vh; transform: translateX(-50%); background: #000e; border: .3vmin solid var(--gold); padding: 1.2vh 2vw; border-radius: 1vmin; font-size: 1.8vw; z-index: 20; transition: opacity .3s; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage"></div>
+  <div id="bar" class="hidden"></div>
+</div>
+<div id="toast" class="hidden"></div>
+<script src="sounds.js"></script>
+<script>
+'use strict';
+// TV board for Jeopardy night.
+//
+// Two modes:
+//  * With the server (server.js): open /?key=YOUR_HOST_KEY. Phones join with the room
+//    code, buzz in, and send wagers and Final Jeopardy answers.
+//  * Without a server (e.g. plain S3): no buzzers. Teams answer out loud, the host judges.
+//
+// Controls: point and click with the Xbox cursor, or use the D-pad / arrow keys and A / Enter.
+// Press B (browser back), Esc or the Menu button for the host panel.
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = (n) => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-US');
+const STORE = 'nj-tv-game';
+const DEFAULT_BUZZ_SECONDS = 20; // how long buzzers stay open with nobody buzzing; change it mid-game in the host panel
+const buzzSeconds = () => (S && S.buzzSecs) || DEFAULT_BUZZ_SECONDS;
+const FINAL_SECONDS = 30;
+
+let GAMES = [];   // list from games/index.json
+let GAME = null;  // the loaded question file
+let S = { screen: 'home' }; // everything about the game in progress; saved so a reload can resume
+let hostOpen = false;
+
+function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} }
+function loadSaved() { try { return JSON.parse(localStorage.getItem(STORE)); } catch (e) { return null; } }
+function clearSaved() { try { localStorage.removeItem(STORE); } catch (e) {} }
+
+function toast(msg, ms = 2500) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.remove('hidden');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.add('hidden'), ms);
+}
+
+// ======================================================================
+// Server connection
+// ======================================================================
+const NET = {
+  on: false, key: null, state: null, es: null,
+
+  async init() {
+    const fromUrl = new URLSearchParams(location.search).get('key');
+    let key = fromUrl;
+    try { if (fromUrl) localStorage.setItem('nj-host-key', fromUrl); else key = localStorage.getItem('nj-host-key'); } catch (e) {}
+    try {
+      const r = await fetch('api/ping', { cache: 'no-store' });
+      if (!r.ok) return;
+    } catch (e) { return; } // no server: buzzer-free mode
+    NET.server = true;
+    if (!key) return;
+    NET.key = key;
+    await new Promise((resolve) => {
+      NET.es = new EventSource('events?role=tv&key=' + encodeURIComponent(key));
+      NET.es.onmessage = (e) => {
+        const prev = NET.state;
+        NET.state = JSON.parse(e.data);
+        const first = !NET.on;
+        NET.on = true;
+        if (first) resolve(); else onNet(prev, NET.state);
+      };
+      NET.es.addEventListener('kicked', () => {
+        NET.es.close(); NET.on = false; NET.badKey = true; resolve();
+      });
+      setTimeout(resolve, 4000);
+    });
+  },
+
+  host(action, extra) {
+    if (!NET.on) return Promise.resolve();
+    const body = Object.assign({ key: NET.key, action }, extra || {});
+    if (S.teams && !body.scores) body.scores = S.teams.map((t) => t.score);
+    return fetch('api/host', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .catch(() => toast('Lost touch with the server'));
+  },
+};
+
+function phase() { return NET.on && NET.state ? NET.state.phase : null; }
+
+let openTimer = null;
+function onNet(prev, s) {
+  prev = prev || {};
+  if (S.screen === 'lobby') {
+    if (s.code !== prev.code) {
+      // New room code: redraw the lobby but keep anything typed in the team box.
+      const typed = $('#newteam') ? $('#newteam').value : '';
+      render();
+      if ($('#newteam')) $('#newteam').value = typed;
+    } else drawLobbyTeams();
+    if (s.teams.length > (prev.teams || []).length) Sounds.play('team-joined');
+    return;
+  }
+  if (s.phase === 'open' && prev.phase !== 'open') {
+    S.openAt = Date.now();
+    clearTimeout(openTimer);
+    openTimer = setTimeout(() => {
+      if (phase() === 'open' && S.screen === 'clue' && S.cur && !S.cur.done) {
+        Sounds.play('times-up');
+        S.cur.timeUp = true;
+        NET.host('idle');
+        render();
+      }
+    }, buzzSeconds() * 1000);
+  }
+  if (s.phase === 'buzzed' && prev.phase !== 'buzzed') {
+    clearTimeout(openTimer);
+    if (S.screen === 'clue') Sounds.play('buzz-in');
+  }
+  if (S.screen === 'dd-wager' && s.dd && s.dd.wager != null && !S.cur.manual && S.cur.wager !== s.dd.wager) {
+    S.cur.wager = s.dd.wager;
+    Sounds.play('pick');
+  }
+  const sig = (x) => JSON.stringify([x.phase, x.winner, x.lockedOut, x.dd, x.final]);
+  if (['clue', 'dd-wager', 'final-cat', 'final-clue', 'final-judge'].includes(S.screen) && sig(prev) !== sig(s)) render();
+  else renderBar();
+}
+
+// ======================================================================
+// Game helpers
+// ======================================================================
+const round = () => GAME.rounds[S.round];
+function curInfo() {
+  const R = round(), cat = R.categories[S.cur.c];
+  return { R, cat, clue: cat.clues[S.cur.i], value: R.values[S.cur.i] };
+}
+function roundDone() { return round().categories.every((c, ci) => c.clues.every((_, i) => S.used[ci + '-' + i])); }
+function teamNames() { return NET.on ? NET.state.teams : (S.lobbyTeams || []); }
+
+async function loadGameFile(file) {
+  const r = await fetch('games/' + file, { cache: 'no-cache' });
+  if (!r.ok) throw new Error('Could not load ' + file);
+  return r.json();
+}
+
+async function chooseGame(idx) {
+  const g = GAMES[idx];
+  try { GAME = await loadGameFile(g.file); } catch (e) { toast(e.message); return; }
+  S = { screen: 'lobby', gameFile: g.file, gameId: GAME.id || g.id, title: GAME.title || g.title, lobbyTeams: [] };
+  if (NET.on) await NET.host('new-room', { gameId: S.gameId, title: S.title });
+  render();
+}
+
+function startGame() {
+  const names = teamNames();
+  if (names.length < 2) { toast('You need at least two teams.'); return; }
+  S.teams = names.map((n) => ({ name: n, score: 0 }));
+  S.round = 0; S.used = {}; S.cur = null; S.final = null; S.control = null; S.fill = true; S.revealed = [];
+  S.screen = 'board';
+  NET.host('idle');
+  Sounds.play('board-fill');
+  render();
+}
+
+function pick(c, i) {
+  const k = c + '-' + i;
+  if (S.used[k]) return;
+  S.used[k] = true; S.lastTile = k;
+  const clue = round().categories[c].clues[i];
+  S.cur = { c, i, dd: !!clue.dd, team: null, wager: null, max: 0, manual: false, tried: S.teams.map(() => false), done: false, timeUp: false, right: null };
+  if (clue.dd) {
+    S.screen = 'dd';
+    Sounds.play('daily-double');
+    NET.host('idle');
+  } else {
+    S.screen = 'clue';
+    Sounds.play('pick');
+    setTimeout(() => Sounds.play('reveal'), 120);
+    NET.host('open', { lockedOut: [] }); // buzzers open the moment the clue appears
+  }
+  render();
+}
+
+function ddTeam(t) {
+  const R = round();
+  S.cur.team = t;
+  S.cur.max = Math.max(S.teams[t].score, R.values[R.values.length - 1]);
+  S.cur.wager = NET.on ? null : Math.min(S.cur.max, R.values[2]);
+  S.screen = 'dd-wager';
+  NET.host('dd-wager', { team: t, max: S.cur.max });
+  render();
+}
+
+function ddShowClue() {
+  if (S.cur.wager == null) return;
+  S.screen = 'clue';
+  NET.host('idle');
+  Sounds.play('reveal');
+  render();
+}
+
+function openBuzzers() {
+  S.cur.timeUp = false;
+  NET.host('open', { lockedOut: S.cur.tried.map((x, i) => (x ? i : -1)).filter((i) => i >= 0) });
+}
+
+function judge(t, right) {
+  const c = S.cur;
+  if (c.done || c.tried[t]) return;
+  const v = c.dd ? c.wager : curInfo().value;
+  S.teams[t].score += right ? v : -v;
+  c.tried[t] = true;
+  Sounds.play(right ? 'right' : 'wrong');
+  const eligible = c.dd ? [c.team] : S.teams.map((_, i) => i);
+  if (right) { c.right = t; S.control = t; }
+  if (right || eligible.every((i) => c.tried[i])) {
+    c.done = true;
+    NET.host('idle');
+  } else if (NET.on && !c.dd) {
+    openBuzzers(); // the other team(s) get a shot
+  } else {
+    NET.host('scores');
+  }
+  render();
+}
+
+function showAnswer() {
+  S.cur.done = true;
+  NET.host('idle');
+  render();
+}
+
+function backToBoard() {
+  S.cur = null;
+  if (roundDone()) { S.screen = 'round-end'; Sounds.play('round-end'); }
+  else S.screen = 'board';
+  NET.host('idle');
+  render();
+}
+
+function nextRound() {
+  if (S.round < GAME.rounds.length - 1) {
+    S.round++; S.used = {}; S.cur = null; S.fill = true; S.revealed = []; S.screen = 'board';
+    NET.host('idle');
+    Sounds.play('board-fill');
+    render();
+  } else enterFinal();
+}
+
+function enterFinal() {
+  const eligible = S.teams.map((t, i) => (t.score > 0 ? i : -1)).filter((i) => i >= 0);
+  S.cur = null;
+  S.final = { eligible, rows: {}, clock: 'idle', showAnswer: false };
+  eligible.forEach((t) => { S.final.rows[t] = { shown: false, wager: null, result: null }; });
+  S.screen = 'final-cat';
+  NET.host('final-wager', { eligible });
+  Sounds.play('reveal');
+  render();
+}
+
+let clockTimer = null;
+function startClock() {
+  S.final.clock = 'running';
+  S.final.clockEnd = Date.now() + FINAL_SECONDS * 1000;
+  Sounds.startThink();
+  render();
+  clearInterval(clockTimer);
+  clockTimer = setInterval(() => {
+    const left = Math.max(0, S.final.clockEnd - Date.now());
+    const bar = $('#clockfill'), txt = $('#clocktxt');
+    if (bar) bar.style.width = (left / (FINAL_SECONDS * 1000) * 100) + '%';
+    if (txt) txt.textContent = Math.ceil(left / 1000);
+    if (left <= 0) endClock();
+  }, 250);
+}
+function endClock() {
+  clearInterval(clockTimer);
+  Sounds.stopThink();
+  Sounds.play('times-up');
+  S.final.clock = 'done';
+  NET.host('final-closed');
+  render();
+}
+
+function phoneSub(t) {
+  return NET.on && NET.state.final && NET.state.final.subs ? NET.state.final.subs[t] : null;
+}
+
+function revealFinal(t) {
+  const row = S.final.rows[t];
+  row.shown = true;
+  const sub = phoneSub(t);
+  if (row.wager == null) row.wager = sub && sub.wagerIn ? sub.wager : 0;
+  Sounds.play('reveal');
+  render();
+}
+
+function judgeFinal(t, right) {
+  const row = S.final.rows[t];
+  if (row.result != null) return;
+  row.result = right;
+  S.teams[t].score += right ? row.wager : -row.wager;
+  Sounds.play(right ? 'right' : 'wrong');
+  NET.host('scores');
+  render();
+}
+
+function finish() {
+  S.screen = 'game-over';
+  NET.host('idle');
+  Sounds.play('winner');
+  render();
+}
+
+function goHome() {
+  clearInterval(clockTimer); Sounds.stopThink();
+  S = { screen: 'home' };
+  clearSaved();
+  hostOpen = false;
+  if (NET.on) NET.host('idle');
+  render();
+}
+
+// ======================================================================
+// Views
+// ======================================================================
+const V = {};
+
+V.home = () => {
+  const saved = loadSaved();
+  const canResume = saved && saved.gameFile && !['home', 'lobby'].includes(saved.screen);
+  let mode;
+  if (NET.on) mode = `<p class="note">Buzzers are on. Phones will join with a room code.</p>`;
+  else if (NET.badKey) mode = `<p class="note">The host key in the link was not accepted, so buzzers are off. Check the link the server printed.</p>`;
+  else if (NET.server) mode = `<p class="note">Buzzers are off. Open this page with <b>?key=</b> and your host key to turn them on.</p>`;
+  else mode = `<p class="note">Buzzers are off: teams answer out loud and the host judges.</p>`;
+  return `<div class="screen">
+    <h1 class="title">Jeopardy <span class="gold">Night</span></h1>
+    <p class="sub">Pick a game</p>
+    <div class="row">${GAMES.map((g, i) => `<button class="gamebtn" data-act="game" data-i="${i}" ${i === 0 && !canResume ? 'data-focus' : ''}>${esc(g.title)}</button>`).join('') || '<p class="note">No games found in games/index.json</p>'}</div>
+    ${canResume ? `<div class="row"><button class="btn gold" data-act="resume" data-focus>Resume: ${esc(saved.title)}</button></div>` : ''}
+    ${mode}
+    <div class="row"><button class="btn small" data-act="fullscreen">Full screen</button></div>
+  </div>`;
+};
+
+V.lobby = () => {
+  const joinUrl = location.origin + location.pathname.replace(/[^/]*$/, '') + 'buzz';
+  return `<div class="screen">
+    <h1 class="title" style="font-size:4.4vw">${esc(S.title)}</h1>
+    ${NET.on ? `<div class="joinbox">
+        <div class="url">On your phone go to <b>${esc(joinUrl.replace(/^https?:\/\//, ''))}</b></div>
+        <div class="code">${esc(NET.state.code)}</div>
+      </div>` : `<p class="sub">Add your teams</p>`}
+    <div class="lteams" id="lteams"></div>
+    <div class="row">
+      <input class="tin" id="newteam" maxlength="30" placeholder="${NET.on ? 'No phone? Add a team here' : 'Team name'}">
+      <button class="btn small" data-act="addteam">Add team</button>
+    </div>
+    <div class="row">
+      <button class="btn gold" data-act="start" data-focus>Start the game</button>
+      <button class="btn small" data-act="home">Back</button>
+    </div>
+  </div>`;
+};
+
+function drawLobbyTeams() {
+  const el = $('#lteams'); if (!el) return;
+  const names = teamNames();
+  el.innerHTML = names.length ? names.map((n, i) => `<div class="lteam">${esc(n)}
+      ${NET.on ? `<small>${NET.state.phones[i] || 0} phone${NET.state.phones[i] === 1 ? '' : 's'}</small>` : ''}
+      <button class="btn x" data-act="removeteam" data-t="${i}">✕</button></div>`).join('')
+    : `<p class="note">${NET.on ? 'Waiting for teams to join…' : 'No teams yet.'}</p>`;
+}
+
+// A game saved before category reveals existed counts as fully revealed.
+const catShown = (ci) => !S.revealed || S.revealed.includes(ci);
+const allCatsShown = () => round().categories.every((_, ci) => catShown(ci));
+
+V.board = () => {
+  const R = round();
+  const nextHidden = R.categories.findIndex((_, ci) => !catShown(ci));
+  const ready = nextHidden === -1; // clues can be picked once every category is showing
+  let h = '<div class="board">';
+  R.categories.forEach((c, ci) => {
+    if (!catShown(ci)) {
+      h += `<button class="cat cover" data-act="revealcat" data-c="${ci}" ${ci === nextHidden ? 'data-focus' : ''}>${esc(R.name)}</button>`;
+    } else {
+      h += `<div class="cat${S.justRevealed === ci ? ' flip' : ''}"><span>${esc(c.name)}</span>${c.kids ? `<small>★ ${esc(GAME.rules.kids)}</small>` : ''}</div>`;
+    }
+  });
+  S.justRevealed = null;
+  R.values.forEach((v, i) => R.categories.forEach((c, ci) => {
+    const k = ci + '-' + i;
+    const anim = S.fill ? ` fill" style="animation-delay:${(Math.random() * 0.9).toFixed(2)}s` : '';
+    h += S.used[k]
+      ? `<div class="tile used"></div>`
+      : `<button class="tile${anim}" id="t-${k}" data-act="pick" data-c="${ci}" data-i="${i}" ${ready ? '' : 'disabled'}>$${v}</button>`;
+  }));
+  S.fill = false;
+  return h + '</div>';
+};
+
+V.dd = () => `<div class="screen">
+    <h1 class="dd">Daily<br>Double!</h1>
+    <p class="sub">Who found it?</p>
+    <div class="row">${S.teams.map((t, i) => `<button class="btn gold" data-act="ddteam" data-t="${i}" ${(S.control ?? 0) === i ? 'data-focus' : ''}>${esc(t.name)}</button>`).join('')}</div>
+  </div>`;
+
+V['dd-wager'] = () => {
+  const c = S.cur, t = S.teams[c.team];
+  const waiting = NET.on && c.wager == null;
+  return `<div class="screen">
+    <h1 class="dd" style="font-size:5vw;animation:none">Daily Double</h1>
+    <p class="sub">${esc(t.name)} can bet up to ${money(c.max)}</p>
+    ${waiting ? `<p class="wait">Waiting for their wager on the phone…</p>` : `<div class="amt">${money(c.wager)}</div>`}
+    <div class="row">
+      ${NET.on ? `<span class="note">${waiting ? 'Or set it here:' : 'Change it:'}</span>` : ''}
+      ${[-500, -100, 100, 500].map((d) => `<button class="btn small" data-act="ddw" data-d="${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}
+      <button class="btn small" data-act="ddw" data-d="max">All in</button>
+    </div>
+    <button class="btn gold" data-act="ddclue" ${waiting ? 'disabled' : 'data-focus'}>Show the clue</button>
+  </div>`;
+};
+
+function ruleFor(cat, value, c) {
+  if (c.dd) return `Daily Double · ${S.teams[c.team].name} wagered ${money(c.wager)}`;
+  if (cat.kids) return '★ ' + GAME.rules.kids;
+  if ((round().restricted || []).includes(value)) return GAME.rules.restricted;
+  return GAME.rules.confer;
+}
+
+V.clue = () => {
+  const { cat, clue, value } = curInfo();
+  const c = S.cur;
+  const p = !c.dd && !c.done ? phase() : null;
+  const eligible = c.dd ? [c.team] : S.teams.map((_, i) => i);
+  const winner = p === 'buzzed' ? NET.state.winner : null;
+
+  let middle = '';
+  if (c.done) {
+    middle = `<p class="answer">${esc(clue.a)}</p>`;
+  } else if (winner != null && S.teams[winner]) {
+    middle = `<div class="banner">${esc(S.teams[winner].name)}!</div>`;
+  } else if (p === 'open') {
+    const elapsed = Math.min(buzzSeconds() * 1000, Date.now() - (S.openAt || Date.now()));
+    middle = `<div class="openb">Buzzers open!<div class="track"><i style="animation-duration:${buzzSeconds()}s;animation-delay:-${elapsed}ms"></i></div></div>`;
+  } else if (c.timeUp) {
+    middle = `<div class="openb" style="color:#ffb0aa">Time's up! No one buzzed.</div>`;
+  }
+
+  let controls = '';
+  if (c.done) {
+    controls = `<button class="btn gold" data-act="back" data-focus>Back to the board</button>`;
+  } else {
+    if (NET.on && !c.dd && c.timeUp && (p === 'reading' || p === 'idle')) {
+      controls += `<button class="btn gold" data-act="open" data-focus>Open buzzers again</button>`;
+    }
+    controls += eligible.map((i) => {
+      const hot = winner === i;
+      const off = c.tried[i];
+      return `<div class="judge ${hot ? 'hot' : ''}"><span class="tn">${esc(S.teams[i].name)}</span>
+        <button class="btn right" data-act="judge" data-t="${i}" data-r="1" ${off ? 'disabled' : ''} ${hot || (c.dd && !off) ? 'data-focus' : ''}>✓</button>
+        <button class="btn wrong" data-act="judge" data-t="${i}" data-r="0" ${off ? 'disabled' : ''}>✗</button></div>`;
+    }).join('');
+    controls += `<button class="btn" data-act="answer" ${!NET.on && !c.dd ? 'data-focus' : ''}>Show answer</button>`;
+  }
+
+  return `<div class="screen">
+    <div class="top"><span>${esc(cat.name)}</span><span class="val">${money(c.dd ? c.wager : value)}</span></div>
+    <div class="rule">${esc(ruleFor(cat, value, c))}</div>
+    <p class="cluetext">${esc(clue.q)}</p>
+    ${middle}
+    <div class="controls">${controls}</div>
+  </div>`;
+};
+
+V['round-end'] = () => {
+  const last = S.round >= GAME.rounds.length - 1;
+  return `<div class="screen">
+    <h1 class="title">End of ${esc(round().name)}</h1>
+    <p class="sub">${last ? 'Get your phones ready…' : 'The values are about to double!'}</p>
+    <button class="btn gold" data-act="nextround" data-focus>${last ? 'On to Final Jeopardy!' : 'On to ' + esc(GAME.rounds[S.round + 1].name)}</button>
+  </div>`;
+};
+
+V['final-cat'] = () => {
+  const f = S.final;
+  const status = f.eligible.map((t) => {
+    const sub = phoneSub(t);
+    const inn = sub && sub.wagerIn;
+    return `<span class="${inn ? 'in' : ''}">${esc(S.teams[t].name)}: ${NET.on ? (inn ? 'wager in ✓' : 'waiting…') : money(S.teams[t].score)}</span>`;
+  }).join('');
+  const out = S.teams.filter((_, i) => !f.eligible.includes(i)).map((t) => esc(t.name));
+  return `<div class="screen">
+    <h1 class="title">Final Jeopardy!</h1>
+    <p class="sub">Tonight's category</p>
+    <div class="amt" style="text-transform:uppercase">${esc(GAME.final.category)}</div>
+    <p class="sub">${NET.on ? 'Enter your wagers on your phones' : 'Write down your wagers'}: anything up to your total.</p>
+    <div class="status">${status || '<span>No team has money left. Final Jeopardy is skipped.</span>'}</div>
+    ${out.length ? `<p class="note">Sitting out (no money): ${out.join(', ')}</p>` : ''}
+    ${f.eligible.length ? `<button class="btn gold" data-act="finalclue" data-focus>Show the clue</button>`
+      : `<button class="btn gold" data-act="finish" data-focus>Final scores</button>`}
+  </div>`;
+};
+
+V['final-clue'] = () => {
+  const f = S.final;
+  let ctl;
+  if (f.clock === 'running') {
+    const left = Math.max(0, f.clockEnd - Date.now());
+    ctl = `<div class="bigclock" id="clocktxt">${Math.ceil(left / 1000)}</div>
+      <div class="track clockbar"><i id="clockfill" style="width:${left / (FINAL_SECONDS * 1000) * 100}%"></i></div>
+      <button class="btn small" data-act="stopclock" data-focus>Stop the clock</button>`;
+  } else if (f.clock === 'done') {
+    ctl = `<p class="sub">Pencils down!</p><button class="btn gold" data-act="tojudge" data-focus>Reveal the answers</button>`;
+  } else {
+    ctl = `<button class="btn gold" data-act="clock" data-focus>Start the clock (${FINAL_SECONDS}s)</button>`;
+  }
+  const status = NET.on ? f.eligible.map((t) => {
+    const sub = phoneSub(t); const inn = sub && sub.answerIn;
+    return `<span class="${inn ? 'in' : ''}">${esc(S.teams[t].name)}: ${inn ? 'answer in ✓' : '…'}</span>`;
+  }).join('') : '';
+  return `<div class="screen">
+    <div class="top"><span>Final Jeopardy</span><span class="val">${esc(GAME.final.category)}</span></div>
+    <p class="cluetext">${esc(GAME.final.clue)}</p>
+    ${status ? `<div class="status">${status}</div>` : ''}
+    <div class="controls" style="flex-direction:column">${ctl}</div>
+  </div>`;
+};
+
+V['final-judge'] = () => {
+  const f = S.final;
+  let firstFocus = false;
+  const rows = f.eligible.map((t) => {
+    const row = f.rows[t];
+    const sub = phoneSub(t);
+    let mid, right;
+    const focusHere = !firstFocus && row.result == null;
+    if (focusHere) firstFocus = true;
+    if (!row.shown) {
+      mid = `<span class="note">${NET.on ? (sub && sub.answerIn ? 'Answer is in' : 'No phone answer') : 'Read out your answer!'}</span>`;
+      right = `<button class="btn gold small" data-act="freveal" data-t="${t}" ${focusHere ? 'data-focus' : ''}>Reveal</button>`;
+    } else {
+      mid = `<span class="their">${NET.on ? (sub && sub.answerIn && sub.answer ? '“' + esc(sub.answer) + '”' : '<span class="note">(nothing sent)</span>') : ''}</span>`;
+      if (row.result == null) {
+        right = `<div class="stepper">
+          ${[-500, -100].map((d) => `<button class="btn small" data-act="fw" data-t="${t}" data-d="${d}">−${-d}</button>`).join('')}
+          <span class="v">${money(row.wager)}</span>
+          ${[100, 500].map((d) => `<button class="btn small" data-act="fw" data-t="${t}" data-d="${d}">+${d}</button>`).join('')}
+          <button class="btn right small" data-act="fjudge" data-t="${t}" data-r="1" ${focusHere ? 'data-focus' : ''}>✓</button>
+          <button class="btn wrong small" data-act="fjudge" data-t="${t}" data-r="0">✗</button></div>`;
+      } else {
+        right = `<span class="res" style="color:${row.result ? '#9ff0b4' : '#ffb0aa'}">${row.result ? '+' : '−'}${money(row.wager)}</span>`;
+      }
+    }
+    return `<div class="frow"><div class="tn">${esc(S.teams[t].name)}<small>${money(S.teams[t].score)}</small></div><div>${mid}</div><div>${right}</div></div>`;
+  }).join('');
+  const allDone = f.eligible.every((t) => f.rows[t].result != null);
+  return `<div class="screen">
+    <div class="top"><span>Final Jeopardy</span><span class="val">${esc(GAME.final.category)}</span></div>
+    ${f.showAnswer ? `<p class="answer">${esc(GAME.final.answer)}</p>`
+      : `<button class="btn small" data-act="fanswer">Show the correct response</button>`}
+    <div class="frows">${rows}</div>
+    ${allDone ? `<button class="btn gold" data-act="finish" data-focus>Final scores</button>` : ''}
+  </div>`;
+};
+
+V['game-over'] = () => {
+  const best = Math.max(...S.teams.map((t) => t.score));
+  const winners = S.teams.filter((t) => t.score === best && best > 0);
+  const sorted = [...S.teams].sort((a, b) => b.score - a.score);
+  return `<div class="screen">
+    <p class="sub">${winners.length > 1 ? 'It’s a tie! Our champions are' : winners.length ? 'Tonight’s champion' : 'Game over'}</p>
+    <h1 class="title gold">${winners.length ? winners.map((t) => esc(t.name)).join(' & ') : 'Nobody this time!'}</h1>
+    <div class="status">${sorted.map((t) => `<span>${esc(t.name)}: ${money(t.score)}</span>`).join('')}</div>
+    <div class="row"><button class="btn gold" data-act="home" data-focus>Play another game</button></div>
+  </div>`;
+};
+
+// ---------- host panel ----------
+function hostPanel() {
+  if (!hostOpen) return '';
+  const inGame = S.teams && !['home', 'lobby'].includes(S.screen);
+  return `<div class="overlay"><div class="modal">
+    <h2>Host</h2>
+    <div class="adj"><span class="tn">Time to buzz</span><span class="sc">${buzzSeconds()} sec</span>
+      <button class="btn small" data-act="buzzsecs" data-d="-5">−5</button>
+      <button class="btn small" data-act="buzzsecs" data-d="5">+5</button></div>
+    ${inGame ? S.teams.map((t, i) => `<div class="adj"><span class="tn">${esc(t.name)}</span><span class="sc">${money(t.score)}</span>
+        ${[-100, 100].map((d) => `<button class="btn small" data-act="adj" data-t="${i}" data-d="${d}">${d > 0 ? '+' : '−'}100</button>`).join('')}</div>`).join('') : ''}
+    <div class="row">
+      ${['clue', 'dd', 'dd-wager'].includes(S.screen) ? `<button class="btn small" data-act="forceback">Back to board</button>` : ''}
+      ${S.screen === 'board' && !allCatsShown() ? `<button class="btn small" data-act="revealall">Reveal all categories</button>` : ''}
+      ${['board', 'round-end'].includes(S.screen) ? `<button class="btn small" data-act="nextround">${S.round < GAME.rounds.length - 1 ? 'Skip to next round' : 'Skip to Final'}</button>` : ''}
+      <button class="btn small" data-act="fullscreen">Full screen</button>
+      ${S.screen !== 'home' ? `<button class="btn small wrong" data-act="home">End game</button>` : ''}
+      <button class="btn gold small" data-act="closehost" data-focus>Close</button>
+    </div>
+  </div></div>`;
+}
+
+// ---------- score bar ----------
+function renderBar() {
+  const bar = $('#bar');
+  if (!S.teams || ['home', 'lobby'].includes(S.screen)) { bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  const winner = phase() === 'buzzed' && S.screen === 'clue' ? NET.state.winner : null;
+  bar.innerHTML = S.teams.map((t, i) => `<div class="team ${winner === i ? 'hot' : ''}">
+      ${S.control === i && S.screen === 'board' ? '<span class="star">★</span>' : ''}
+      <div class="n">${esc(t.name)}</div>
+      <div class="s ${t.score < 0 ? 'neg' : ''}">${money(t.score)}</div>
+      ${NET.on ? `<div class="meta">${NET.state.phones[i] || 0} phone${NET.state.phones[i] === 1 ? '' : 's'}</div>` : ''}
+    </div>`).join('') + `<div class="side">
+      ${NET.on ? `<div class="room">Room<b>${esc(NET.state.code)}</b></div>` : ''}
+      <button class="btn" data-act="openhost">Host</button>
+    </div>`;
+}
+
+// ---------- render ----------
+function render() {
+  const view = V[S.screen] || V.home;
+  $('#stage').innerHTML = view() + hostPanel();
+  if (S.screen === 'lobby') drawLobbyTeams();
+  renderBar();
+  focusDefault();
+  if (S.screen !== 'home') save();
+  syncHostView();
+}
+
+// Tell the host's phone (host.html) what's on the TV, answer included.
+// The server only ever sends this to the host page, never to players' phones.
+let lastHostView = '';
+function hostViewInfo() {
+  const info = { screen: S.screen, title: S.title || '' };
+  if (!GAME || !S.teams) return info;
+  if (GAME.rounds[S.round]) info.round = GAME.rounds[S.round].name;
+  if (S.cur && ['clue', 'dd', 'dd-wager'].includes(S.screen)) {
+    const { cat, clue, value } = curInfo();
+    Object.assign(info, { category: cat.name, value, clue: clue.q, answer: clue.a, dd: S.cur.dd, wager: S.cur.wager });
+  }
+  if (S.final && ['final-cat', 'final-clue', 'final-judge'].includes(S.screen)) {
+    Object.assign(info, { category: GAME.final.category, clue: GAME.final.clue, answer: GAME.final.answer, final: true });
+  }
+  if (S.screen === 'board') {
+    const R = round();
+    info.left = R.categories.reduce((n, c, ci) => n + c.clues.filter((_, i) => !S.used[ci + '-' + i]).length, 0);
+  }
+  return info;
+}
+function syncHostView() {
+  if (!NET.on) return;
+  const info = hostViewInfo();
+  const json = JSON.stringify(info);
+  if (json === lastHostView) return;
+  lastHostView = json;
+  NET.host('hostview', { info });
+}
+
+function focusDefault() {
+  const scope = document.querySelector('.overlay') || $('#stage');
+  let el = scope.querySelector('[data-focus]:not([disabled])');
+  if (!el && S.screen === 'board' && !hostOpen) {
+    el = (S.lastTile && document.getElementById('t-' + S.lastTile)) || scope.querySelector('.tile:not(.used)');
+    if (!el && S.lastTile) {
+      const col = S.lastTile.split('-')[0];
+      el = scope.querySelector(`.tile[data-c="${col}"]`) || scope.querySelector('button.tile');
+    }
+  }
+  if (!el) el = scope.querySelector('button:not([disabled])');
+  if (el) el.focus({ preventScroll: true });
+}
+
+// ======================================================================
+// Input: clicks, keyboard, Xbox controller
+// ======================================================================
+const ACTIONS = {
+  game: (d) => chooseGame(Number(d.i)),
+  async resume() {
+    const saved = loadSaved();
+    try { GAME = await loadGameFile(saved.gameFile); } catch (e) { toast(e.message); return; }
+    S = saved;
+    if (S.final && S.final.clock === 'running') S.final.clock = 'idle';
+    if (NET.on) await NET.host('restore', { gameId: S.gameId, title: S.title, teams: S.teams.map((t) => t.name) });
+    if (S.screen === 'clue' && S.cur && !S.cur.dd && !S.cur.done) openBuzzers();
+    render();
+  },
+  fullscreen() { const d = document.documentElement; try { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } catch (e) { toast('Full screen is not available here'); } },
+  addteam() {
+    const inp = $('#newteam'); const name = inp.value.trim();
+    if (!name) { inp.focus(); return; }
+    if (teamNames().length >= 4) { toast('Four teams is the most the board can show.'); return; }
+    if (NET.on) NET.host('add-team', { name });
+    else { S.lobbyTeams.push(name); drawLobbyTeams(); Sounds.play('team-joined'); }
+    inp.value = '';
+  },
+  removeteam(d) {
+    const t = Number(d.t);
+    if (NET.on) NET.host('remove-team', { team: t });
+    else { S.lobbyTeams.splice(t, 1); drawLobbyTeams(); }
+  },
+  start: startGame,
+  home: goHome,
+  pick: (d) => pick(Number(d.c), Number(d.i)),
+  revealcat(d) {
+    const c = Number(d.c);
+    if (!S.revealed) S.revealed = [];
+    if (S.revealed.includes(c)) return;
+    S.revealed.push(c);
+    S.justRevealed = c;
+    Sounds.play('category-reveal');
+    render();
+  },
+  revealall() {
+    hostOpen = false;
+    S.revealed = round().categories.map((_, ci) => ci);
+    Sounds.play('category-reveal');
+    render();
+  },
+  ddteam: (d) => ddTeam(Number(d.t)),
+  ddw(d) {
+    const c = S.cur, R = round();
+    const base = c.wager == null ? R.values[2] : c.wager;
+    c.wager = d.d === 'max' ? c.max : Math.max(0, Math.min(c.max, base + Number(d.d)));
+    c.manual = true;
+    render();
+  },
+  ddclue: ddShowClue,
+  open: openBuzzers,
+  judge: (d) => judge(Number(d.t), d.r === '1'),
+  answer: showAnswer,
+  back: backToBoard,
+  nextround() { hostOpen = false; nextRound(); },
+  finalclue() { S.screen = 'final-clue'; NET.host('final-answer'); Sounds.play('reveal'); render(); },
+  clock: startClock,
+  stopclock: endClock,
+  tojudge() { S.screen = 'final-judge'; render(); },
+  freveal: (d) => revealFinal(Number(d.t)),
+  fw(d) {
+    const t = Number(d.t), row = S.final.rows[t];
+    const max = Math.max(0, S.teams[t].score);
+    row.wager = Math.max(0, Math.min(max, row.wager + Number(d.d)));
+    render();
+  },
+  fjudge: (d) => judgeFinal(Number(d.t), d.r === '1'),
+  fanswer() { S.final.showAnswer = true; Sounds.play('reveal'); render(); },
+  finish,
+  openhost() { hostOpen = true; render(); },
+  closehost() { hostOpen = false; render(); },
+  adj(d) { S.teams[Number(d.t)].score += Number(d.d); NET.host('scores'); render(); },
+  buzzsecs(d) {
+    S.buzzSecs = Math.max(5, Math.min(60, buzzSeconds() + Number(d.d)));
+    render();
+    if (S.screen === 'home') toast(`Time to buzz: ${S.buzzSecs} seconds`);
+  },
+  forceback() {
+    hostOpen = false;
+    if (S.cur) S.cur.done = true;
+    backToBoard();
+  },
+};
+
+let lastPadA = 0;
+let lastPadMove = 0;
+
+// One click handler for everything with data-act.
+document.addEventListener('click', (e) => {
+  // If the controller's A button already pressed the focused button, ignore the
+  // cursor's own click from the same press so nothing happens twice.
+  if (e.isTrusted && Date.now() - lastPadA < 350) { e.preventDefault(); e.stopPropagation(); return; }
+  Sounds.unlock();
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled) return;
+  const fn = ACTIONS[el.dataset.act];
+  if (fn) fn(el.dataset);
+}, true);
+
+// Focus follows the Xbox cursor, so the A button and the cursor always agree.
+document.addEventListener('pointerover', (e) => {
+  const b = e.target.closest('button:not([disabled])');
+  if (b && document.activeElement !== b) b.focus({ preventScroll: true });
+});
+
+$('#stage').addEventListener('keydown', (e) => {
+  if (e.target.id === 'newteam' && e.key === 'Enter') ACTIONS.addteam();
+});
+
+// Spatial navigation: move focus to the nearest button in the direction pressed.
+function move(dir) {
+  const scope = document.querySelector('.overlay') || document;
+  const list = [...scope.querySelectorAll('button:not([disabled]), input')]
+    .filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; });
+  const cur = document.activeElement;
+  if (!list.includes(cur)) { if (list[0]) list[0].focus(); return; }
+  const a = cur.getBoundingClientRect();
+  const ax = a.left + a.width / 2, ay = a.top + a.height / 2;
+  let best = null, bestScore = Infinity;
+  for (const el of list) {
+    if (el === cur) continue;
+    const b = el.getBoundingClientRect();
+    const dx = b.left + b.width / 2 - ax, dy = b.top + b.height / 2 - ay;
+    let main, cross;
+    if (dir === 'left') { if (dx > -2) continue; main = -dx; cross = Math.abs(dy); }
+    if (dir === 'right') { if (dx < 2) continue; main = dx; cross = Math.abs(dy); }
+    if (dir === 'up') { if (dy > -2) continue; main = -dy; cross = Math.abs(dx); }
+    if (dir === 'down') { if (dy < 2) continue; main = dy; cross = Math.abs(dx); }
+    const score = main + cross * 2.5;
+    if (score < bestScore) { bestScore = score; best = el; }
+  }
+  if (best) best.focus({ preventScroll: true });
+}
+
+const KEY_DIRS = {
+  ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
+  GamepadDPadUp: 'up', GamepadDPadDown: 'down', GamepadDPadLeft: 'left', GamepadDPadRight: 'right',
+};
+document.addEventListener('keydown', (e) => {
+  const dir = KEY_DIRS[e.key];
+  if (dir) {
+    if (document.activeElement && document.activeElement.tagName === 'INPUT' && (dir === 'left' || dir === 'right')) return;
+    e.preventDefault();
+    if (Date.now() - lastPadMove < 200) return; // the controller already moved us
+    move(dir);
+    return;
+  }
+  if (e.key === 'GamepadA') {
+    const el = document.activeElement;
+    if (el && el.tagName === 'BUTTON') { e.preventDefault(); lastPadA = Date.now(); el.click(); }
+  }
+  if (e.key === 'Escape' || e.key === 'GamepadMenu') { hostOpen = !hostOpen; render(); }
+});
+
+// The Xbox B button means "back" in Edge. Catch it so the game page doesn't close.
+history.pushState({ game: 1 }, '');
+window.addEventListener('popstate', () => {
+  history.pushState({ game: 1 }, '');
+  if (!hostOpen) { hostOpen = true; render(); }
+});
+
+// Controller support through the Gamepad API, where Edge provides it.
+const held = {};
+function pollPads() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  for (const p of pads) {
+    if (!p) continue;
+    const pressed = (i) => p.buttons[i] && p.buttons[i].pressed;
+    const dirs = { up: pressed(12), down: pressed(13), left: pressed(14), right: pressed(15) };
+    const now = performance.now();
+    for (const d in dirs) {
+      if (dirs[d]) {
+        if (!held[d]) { held[d] = now + 350; lastPadMove = Date.now(); move(d); }
+        else if (now > held[d]) { held[d] = now + 140; lastPadMove = Date.now(); move(d); }
+      } else held[d] = 0;
+    }
+    if (pressed(0)) {
+      if (!held.a) {
+        held.a = true;
+        lastPadA = Date.now();
+        const el = document.activeElement;
+        if (el && el.tagName === 'BUTTON' && !el.disabled) el.click();
+      }
+    } else held.a = false;
+    if (pressed(9)) { if (!held.menu) { held.menu = true; hostOpen = !hostOpen; render(); } } else held.menu = false;
+  }
+  requestAnimationFrame(pollPads);
+}
+requestAnimationFrame(pollPads);
+
+// ======================================================================
+// Start up
+// ======================================================================
+(async function boot() {
+  Sounds.probe('');
+  $('#stage').innerHTML = '<div class="screen"><p class="sub">Loading…</p></div>';
+  await NET.init();
+  try {
+    const r = await fetch('games/index.json', { cache: 'no-cache' });
+    GAMES = await r.json();
+  } catch (e) {
+    GAMES = [];
+    toast('Could not load games/index.json. Open this page from a web server, not as a file.', 6000);
+  }
+  render();
+})();
+</script>
+</body>
+</html>

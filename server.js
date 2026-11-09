@@ -1,0 +1,350 @@
+'use strict';
+// Narnia Jeopardy server.
+// Plain Node (18+), no npm packages. It does three jobs:
+//   1. Serves the files in ./public (the TV board, the phone page, the question files).
+//   2. Keeps the "room" state: which game is being played, the teams that registered,
+//      who buzzed first, and the wagers and Final Jeopardy answers phones send in.
+//   3. Pushes that state live to every screen with Server-Sent Events (SSE): a stream
+//      that only goes server -> browser. Browsers talk back with ordinary POST requests.
+//
+// The TV is the host and proves it with HOST_KEY. Phones prove they belong to the
+// room with the 4-letter code shown on the TV. The TV keeps the board and the scores
+// and sends the scores here so phones can show them.
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+const PORT = Number(process.env.PORT) || 3000;
+const HOST_KEY = process.env.HOST_KEY || crypto.randomBytes(4).toString('hex');
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const EARLY_PENALTY_MS = 500; // buzz before the host opens the buzzers and you're frozen this long
+const MAX_TEAMS = 4;
+
+const LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // no I or O, so nobody misreads the code
+function newCode() {
+  let s = '';
+  for (let i = 0; i < 4; i++) s += LETTERS[crypto.randomInt(LETTERS.length)];
+  return s;
+}
+
+// ---------- the room ----------
+// One room at a time is plenty for a living room.
+function freshRoom(gameId = null, title = '') {
+  return {
+    code: newCode(),
+    gameId,
+    title,
+    teams: [],          // [{ name }], in the order they registered
+    scores: [],
+    // none | lobby | idle | reading | open | buzzed | dd-wager | final-wager | final-answer | final-closed
+    phase: gameId ? 'lobby' : 'none',
+    winner: null,       // team index that buzzed first
+    lockedOut: [],      // teams that already answered this clue
+    early: {},          // team index -> time until which that team's buzzes are ignored
+    dd: null,           // { team, max, wager } while a Daily Double wager is being made
+    final: { eligible: [], max: {}, subs: {} },
+    hostView: null,     // what the host's phone shows: the clue on the TV and its answer. Never sent to players.
+    seq: 0,
+  };
+}
+let room = freshRoom();
+
+// ---------- live connections (SSE) ----------
+const clients = new Set(); // { res, role: 'tv' | 'phone', team }
+
+function phoneCounts() {
+  const counts = room.teams.map(() => 0);
+  for (const c of clients) if (c.role === 'phone' && counts[c.team] !== undefined) counts[c.team]++;
+  return counts;
+}
+
+function stateFor(client) {
+  const base = {
+    gameId: room.gameId,
+    title: room.title,
+    teams: room.teams.map((t) => t.name),
+    scores: room.scores,
+    phase: room.phase,
+    winner: room.winner,
+    lockedOut: room.lockedOut,
+    seq: room.seq,
+  };
+  if (client.role === 'host') {
+    return { ...base, code: room.code, view: room.hostView };
+  }
+  if (client.role === 'tv') {
+    return { ...base, code: room.code, phones: phoneCounts(), dd: room.dd, final: room.final };
+  }
+  // A phone only sees its own Daily Double and its own Final Jeopardy entry.
+  const mine = client.team;
+  return {
+    ...base,
+    team: mine,
+    dd: room.dd ? { team: room.dd.team, max: room.dd.team === mine ? room.dd.max : null, wager: room.dd.team === mine ? room.dd.wager : null } : null,
+    final: {
+      eligible: room.final.eligible.includes(mine),
+      max: room.final.max[mine] || 0,
+      mine: room.final.subs[mine] || null,
+    },
+  };
+}
+
+function send(client) {
+  client.res.write(`data: ${JSON.stringify(stateFor(client))}\n\n`);
+}
+
+function broadcast() {
+  room.seq++;
+  for (const c of clients) send(c);
+}
+
+// Phones from an old room get told to rejoin.
+function kickPhones() {
+  for (const c of clients) {
+    if (c.role === 'phone') { c.res.write('event: kicked\ndata: {}\n\n'); c.res.end(); clients.delete(c); }
+  }
+}
+
+// Comment lines keep proxies (and Xbox Edge) from closing a quiet stream.
+setInterval(() => { for (const c of clients) c.res.write(': ping\n\n'); }, 20000);
+
+// ---------- helpers ----------
+function json(res, status, body) {
+  res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+  res.end(JSON.stringify(body));
+}
+
+function readBody(req) {
+  return new Promise((resolve) => {
+    let data = '';
+    req.on('data', (chunk) => {
+      data += chunk;
+      if (data.length > 10000) req.destroy(); // nobody needs to send more than this
+    });
+    req.on('end', () => {
+      try { resolve(JSON.parse(data || '{}')); } catch { resolve({}); }
+    });
+  });
+}
+
+const validTeam = (t) => Number.isInteger(t) && t >= 0 && t < room.teams.length;
+const keyOk = (k) => typeof k === 'string' && k.length > 0 && k.length <= 64 &&
+  crypto.timingSafeEqual(Buffer.from(k.padEnd(64)), Buffer.from(HOST_KEY.padEnd(64)));
+const codeOk = (c) => room.gameId && typeof c === 'string' && c.toUpperCase() === room.code;
+const cleanName = (n) => String(n || '').replace(/\s+/g, ' ').trim().slice(0, 30);
+
+// ---------- host (TV) actions ----------
+function hostAction(body) {
+  if (Array.isArray(body.scores)) room.scores = room.teams.map((_, i) => Number(body.scores[i]) || 0);
+  switch (body.action) {
+    case 'new-room': // pick a game: fresh code, no teams yet, phones from before must rejoin
+      kickPhones();
+      room = freshRoom(String(body.gameId || 'game'), String(body.title || '').slice(0, 80));
+      break;
+    case 'restore': { // TV reloaded mid-game: put its teams and scores back, keep the room code
+      if (!Array.isArray(body.teams) || body.teams.length < 1 || body.teams.length > MAX_TEAMS) return false;
+      const names = body.teams.map(cleanName);
+      const same = room.gameId === String(body.gameId) && names.join('|') === room.teams.map((t) => t.name).join('|');
+      if (!same) {
+        if (!room.gameId) room.code = newCode();
+        kickPhones();
+        room.gameId = String(body.gameId || 'game');
+        room.title = String(body.title || '').slice(0, 80);
+        room.teams = names.map((name) => ({ name }));
+      }
+      room.scores = room.teams.map((_, i) => Number((body.scores || [])[i]) || 0);
+      room.phase = 'idle'; room.winner = null; room.lockedOut = []; room.dd = null;
+      break;
+    }
+    case 'add-team': { // host types a team name on the TV (for a team without a phone)
+      const name = cleanName(body.name);
+      if (!name || room.teams.length >= MAX_TEAMS) return false;
+      room.teams.push({ name }); room.scores.push(0);
+      break;
+    }
+    case 'remove-team': {
+      if (room.phase !== 'lobby' || !validTeam(body.team)) return false;
+      room.teams.splice(body.team, 1); room.scores.splice(body.team, 1);
+      kickPhones(); // team numbers shifted, so phones re-pick their team
+      break;
+    }
+    case 'scores': break;
+    case 'hostview': { // the TV tells the host page what's on screen, answer included
+      const v = body.info && typeof body.info === 'object' ? body.info : null;
+      const json = v ? JSON.stringify(v) : 'null';
+      if (json.length > 4000) return false;
+      room.hostView = JSON.parse(json);
+      break;
+    }
+    case 'idle':
+      room.phase = 'idle'; room.winner = null; room.dd = null; break;
+    case 'reading': // clue on screen, host reading it aloud; buzzing now earns a penalty
+      room.phase = 'reading'; room.winner = null; room.lockedOut = []; room.early = {}; room.dd = null;
+      break;
+    case 'open':
+      room.phase = 'open'; room.winner = null;
+      if (Array.isArray(body.lockedOut)) room.lockedOut = body.lockedOut.filter(validTeam);
+      break;
+    case 'dd-wager':
+      if (!validTeam(body.team)) return false;
+      room.phase = 'dd-wager';
+      room.dd = { team: body.team, max: Math.max(0, Math.round(Number(body.max) || 0)), wager: null };
+      break;
+    case 'final-wager': {
+      const eligible = (body.eligible || []).filter(validTeam);
+      const max = {};
+      for (const t of eligible) max[t] = Math.max(0, room.scores[t] || 0);
+      room.phase = 'final-wager';
+      room.final = { eligible, max, subs: {} };
+      break;
+    }
+    case 'final-answer': room.phase = 'final-answer'; break;
+    case 'final-closed': room.phase = 'final-closed'; break;
+    default: return false;
+  }
+  broadcast();
+  return true;
+}
+
+// ---------- phone actions ----------
+function register(name) {
+  name = cleanName(name);
+  if (!name) return { error: 'Pick a team name first.' };
+  if (room.phase !== 'lobby') return { error: 'The game has already started. Join one of the teams instead.' };
+  if (room.teams.length >= MAX_TEAMS) return { error: `This game is full (${MAX_TEAMS} teams).` };
+  if (room.teams.some((t) => t.name.toLowerCase() === name.toLowerCase())) return { error: 'That name is taken.' };
+  room.teams.push({ name }); room.scores.push(0);
+  broadcast();
+  return { team: room.teams.length - 1 };
+}
+
+function buzz(team) {
+  const now = Date.now();
+  if (room.phase === 'reading') {
+    room.early[team] = now + EARLY_PENALTY_MS;
+    return 'early';
+  }
+  if (room.phase !== 'open') return room.phase === 'buzzed' ? 'late' : 'closed';
+  if (room.lockedOut.includes(team)) return 'locked';
+  if ((room.early[team] || 0) > now) return 'early';
+  // First one through this line wins. Node handles requests one at a time,
+  // so two buzzes can never both get here.
+  room.phase = 'buzzed';
+  room.winner = team;
+  broadcast();
+  return 'won';
+}
+
+function wager(team, amount) {
+  const w = Math.round(Number(amount));
+  if (!Number.isFinite(w) || w < 0) return 'bad-wager';
+  if (room.phase === 'dd-wager' && room.dd && room.dd.team === team) {
+    if (w > room.dd.max) return 'too-high';
+    room.dd.wager = w;
+  } else if (room.phase === 'final-wager' && room.final.eligible.includes(team)) {
+    if (w > room.final.max[team]) return 'too-high';
+    const sub = room.final.subs[team] || { wager: 0, answer: '', wagerIn: false, answerIn: false };
+    sub.wager = w; sub.wagerIn = true;
+    room.final.subs[team] = sub;
+  } else {
+    return 'closed';
+  }
+  broadcast();
+  return 'ok';
+}
+
+function finalAnswer(team, answer) {
+  if (room.phase !== 'final-answer' || !room.final.eligible.includes(team)) return 'closed';
+  const sub = room.final.subs[team] || { wager: 0, answer: '', wagerIn: false, answerIn: false };
+  sub.answer = String(answer || '').slice(0, 200);
+  sub.answerIn = true;
+  room.final.subs[team] = sub;
+  broadcast();
+  return 'ok';
+}
+
+// ---------- static files ----------
+const TYPES = {
+  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
+  '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.m4a': 'audio/mp4',
+  '.png': 'image/png', '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
+};
+
+function serveStatic(req, res, pathname) {
+  if (pathname === '/') pathname = '/index.html';
+  if (pathname === '/buzz') pathname = '/buzz.html';
+  if (pathname === '/host') pathname = '/host.html';
+  let file;
+  try { file = path.normalize(path.join(PUBLIC_DIR, decodeURIComponent(pathname))); } catch { return json(res, 400, { error: 'bad path' }); }
+  if (!file.startsWith(PUBLIC_DIR + path.sep)) return json(res, 403, { error: 'forbidden' });
+  fs.stat(file, (err, st) => {
+    if (err || !st.isFile()) return json(res, 404, { error: 'not found' });
+    res.writeHead(200, {
+      'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream',
+      'Content-Length': st.size,
+      'Cache-Control': 'no-cache',
+    });
+    fs.createReadStream(file).pipe(res);
+  });
+}
+
+// ---------- routes ----------
+const server = http.createServer(async (req, res) => {
+  const url = new URL(req.url, 'http://localhost');
+  const p = url.pathname;
+
+  if (req.method === 'GET' && p === '/api/ping') return json(res, 200, { ok: true });
+
+  if (req.method === 'GET' && p === '/events') {
+    const role = url.searchParams.get('role');
+    const team = Number(url.searchParams.get('team'));
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no', // tells nginx not to hold the stream back
+    });
+    res.write('retry: 2000\n\n');
+    const allowed = role === 'tv' || role === 'host'
+      ? keyOk(url.searchParams.get('key'))
+      : role === 'phone' && codeOk(url.searchParams.get('code')) && validTeam(team);
+    if (!allowed) {
+      res.write('event: kicked\ndata: {}\n\n');
+      return res.end();
+    }
+    const client = { res, role, team: role === 'phone' ? team : null };
+    clients.add(client);
+    req.on('close', () => { if (clients.delete(client)) broadcast(); });
+    broadcast(); // the TV sees the new phone arrive
+    return;
+  }
+
+  if (req.method === 'POST' && p.startsWith('/api/')) {
+    const body = await readBody(req);
+    if (p === '/api/host') {
+      if (!keyOk(body.key)) return json(res, 403, { error: 'bad host key' });
+      return json(res, hostAction(body) ? 200 : 400, { ok: true });
+    }
+    if (!codeOk(body.code)) return json(res, 403, { error: "That room code doesn't match the one on the TV." });
+    if (p === '/api/join') return json(res, 200, { title: room.title, teams: room.teams.map((t) => t.name), lobby: room.phase === 'lobby' });
+    if (p === '/api/register') { const r = register(body.name); return json(res, r.error ? 400 : 200, r); }
+    if (!validTeam(body.team)) return json(res, 400, { error: 'bad team' });
+    if (p === '/api/buzz') return json(res, 200, { result: buzz(body.team) });
+    if (p === '/api/wager') return json(res, 200, { result: wager(body.team, body.wager) });
+    if (p === '/api/answer') return json(res, 200, { result: finalAnswer(body.team, body.answer) });
+    return json(res, 404, { error: 'not found' });
+  }
+
+  if (req.method === 'GET') return serveStatic(req, res, p);
+  json(res, 405, { error: 'method not allowed' });
+});
+
+server.listen(PORT, () => {
+  console.log(`Narnia Jeopardy running on port ${PORT}`);
+  console.log(`  TV (host):  http://<your-server>:${PORT}/?key=${HOST_KEY}`);
+  console.log(`  Phones:     http://<your-server>:${PORT}/buzz`);
+  console.log(`  Host cards: http://<your-server>:${PORT}/host?key=${HOST_KEY}   (your phone only: it shows the answers)`);
+  if (!process.env.HOST_KEY) console.log('  Tip: set HOST_KEY yourself so the TV link stays the same between restarts.');
+});

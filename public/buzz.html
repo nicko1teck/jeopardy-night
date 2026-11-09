@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#060ce9">
+<title>Jeopardy Buzzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #0b1bd6; --blue-deep: #050b7a; --gold: #f2bd4b; --ink: #fff;
+    --green: #22b455; --red: #d83a33; --amber: #e39b1b; --grey: #3a3f5c;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: var(--blue-deep); color: var(--ink); }
+  body { font-family: Oswald, "Arial Narrow", Arial, sans-serif; overscroll-behavior: none; }
+  #app { min-height: 100%; display: flex; flex-direction: column; }
+
+  header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #0006; }
+  header .name { font-size: 22px; font-weight: 700; text-transform: uppercase; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  header .score { font-size: 22px; color: var(--gold); font-weight: 700; }
+  header .score.neg { color: #ff7a72; }
+  header button.leave { background: none; border: 1px solid #fff5; color: #fffc; border-radius: 6px; padding: 4px 10px; font: inherit; font-size: 14px; }
+
+  main { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 14px; }
+  h1 { font-size: 34px; margin: 18px 0 4px; text-transform: uppercase; letter-spacing: .5px; text-align: center; text-shadow: 3px 3px 0 #000; }
+  h2 { font-size: 22px; margin: 6px 0; text-transform: uppercase; color: var(--gold); }
+  p { margin: 0; font-size: 18px; line-height: 1.35; color: #ffffffd9; font-family: system-ui, sans-serif; }
+  .center { text-align: center; }
+
+  input, button { font-family: inherit; }
+  input[type=text], input[type=number] {
+    width: 100%; font-size: 26px; padding: 12px 14px; border-radius: 10px; border: 3px solid #fff4;
+    background: #fff; color: #111; font-family: system-ui, sans-serif;
+  }
+  input.code { text-transform: uppercase; letter-spacing: 10px; text-align: center; font-size: 40px; font-family: Oswald, sans-serif; }
+  .btn {
+    display: block; width: 100%; font-size: 24px; font-weight: 700; text-transform: uppercase;
+    padding: 14px; border-radius: 12px; border: 0; background: var(--gold); color: #1a1200; cursor: pointer;
+  }
+  .btn.alt { background: #ffffff1f; color: #fff; border: 2px solid #fff5; }
+  .btn:disabled { opacity: .5; }
+  .err { color: #ffb0aa; font-family: system-ui, sans-serif; font-size: 16px; min-height: 1.2em; }
+  .teams { display: flex; flex-direction: column; gap: 10px; }
+  .divider { text-align: center; color: #fff9; font-size: 16px; margin: 6px 0; }
+
+  /* The big buzzer */
+  .buzzer {
+    flex: 1; min-height: 55vh; border: 0; border-radius: 26px; color: #fff;
+    font-family: Oswald, sans-serif; font-weight: 700; text-transform: uppercase;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    font-size: 64px; text-shadow: 3px 3px 0 #0007; touch-action: manipulation; user-select: none;
+    background: var(--grey); box-shadow: inset 0 -10px 0 #0004;
+    transition: transform .06s, background .15s;
+  }
+  .buzzer small { font-size: 20px; font-weight: 500; text-shadow: none; opacity: .9; text-transform: none; font-family: system-ui, sans-serif; padding: 0 16px; text-align: center; }
+  .buzzer.reading { background: #6b5320; }
+  .buzzer.open { background: var(--green); animation: pulse 0.9s infinite; }
+  .buzzer.won { background: var(--gold); color: #1a1200; text-shadow: none; }
+  .buzzer.lost { background: var(--red); }
+  .buzzer.early { background: var(--amber) !important; animation: none; }
+  .buzzer.pressed { transform: scale(.97); }
+  @keyframes pulse { 50% { box-shadow: inset 0 -10px 0 #0004, 0 0 0 10px #22b45555; } }
+
+  .panel { background: #0004; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .money { font-size: 54px; text-align: center; color: var(--gold); font-weight: 700; }
+  .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ok { color: #9ff0b4; font-family: system-ui, sans-serif; font-size: 18px; text-align: center; }
+  textarea { width: 100%; min-height: 110px; font-size: 22px; padding: 12px; border-radius: 10px; border: 3px solid #fff4; font-family: system-ui, sans-serif; }
+  .list { font-family: system-ui, sans-serif; font-size: 18px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="sounds.js"></script>
+<script>
+'use strict';
+// Phone buzzer. Flow: enter room code -> create or pick a team -> buzzer.
+// The server pushes the game state here over an EventSource (SSE) stream.
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = (n) => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-US');
+const STORE = 'nj-phone';
+
+let me = loadMe();          // { code, team }
+let joinInfo = null;        // { title, teams, lobby } while choosing a team
+let state = null;           // latest state from the server
+let es = null;              // EventSource
+let lastView = '';          // so typing in a wager box isn't wiped by updates
+let flash = null;           // { cls, text, until } short-lived buzzer feedback
+
+function loadMe() { try { return JSON.parse(localStorage.getItem(STORE)) || null; } catch (e) { return null; } }
+function saveMe() { try { me ? localStorage.setItem(STORE, JSON.stringify(me)) : localStorage.removeItem(STORE); } catch (e) {} }
+
+async function post(path, body) {
+  const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (!r.ok) throw new Error(data.error || 'Something went wrong.');
+  return data;
+}
+
+// ---------- screens before the game ----------
+function showJoin(error) {
+  closeStream();
+  lastView = 'join';
+  $('#app').innerHTML = `
+    <main>
+      <h1>Jeopardy Buzzer</h1>
+      <p class="center">Enter the room code on the TV.</p>
+      <input id="code" class="code" type="text" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD">
+      <div class="err" id="err">${error ? esc(error) : ''}</div>
+      <button class="btn" id="go">Join game</button>
+    </main>`;
+  const go = async () => {
+    Sounds.unlock();
+    const code = $('#code').value.trim().toUpperCase();
+    if (code.length !== 4) { $('#err').textContent = 'The code is 4 letters.'; return; }
+    $('#go').disabled = true;
+    try {
+      joinInfo = await post('api/join', { code });
+      joinInfo.code = code;
+      showTeams();
+    } catch (e) { $('#err').textContent = e.message; $('#go').disabled = false; }
+  };
+  $('#go').onclick = go;
+  $('#code').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  $('#code').focus();
+}
+
+function showTeams(error) {
+  lastView = 'teams';
+  const t = joinInfo.teams;
+  $('#app').innerHTML = `
+    <main>
+      <h1>${esc(joinInfo.title || 'Jeopardy')}</h1>
+      ${joinInfo.lobby ? `
+        <h2>Make your team</h2>
+        <input id="name" type="text" maxlength="30" placeholder="Team name" autocomplete="off">
+        <button class="btn" id="create">Create team</button>` : `<p class="center">The game has started, so pick your team.</p>`}
+      <div class="err" id="err">${error ? esc(error) : ''}</div>
+      ${t.length ? `<div class="divider">${joinInfo.lobby ? 'or join a team that’s already here' : ''}</div>
+        <div class="teams">${t.map((n, i) => `<button class="btn alt" data-team="${i}">${esc(n)}</button>`).join('')}</div>` : ''}
+      <button class="btn alt" id="back" style="margin-top:auto">Back</button>
+    </main>`;
+  document.querySelectorAll('[data-team]').forEach((b) => b.onclick = () => enter(joinInfo.code, Number(b.dataset.team)));
+  $('#back').onclick = () => showJoin();
+  if (joinInfo.lobby) {
+    const create = async () => {
+      Sounds.unlock();
+      const name = $('#name').value.trim();
+      if (!name) { $('#err').textContent = 'Give your team a name.'; return; }
+      $('#create').disabled = true;
+      try {
+        const r = await post('api/register', { code: joinInfo.code, name });
+        enter(joinInfo.code, r.team);
+      } catch (e) {
+        $('#err').textContent = e.message; $('#create').disabled = false;
+        try { joinInfo = Object.assign(await post('api/join', { code: joinInfo.code }), { code: joinInfo.code }); } catch (_) {}
+      }
+    };
+    $('#create').onclick = create;
+    $('#name').addEventListener('keydown', (e) => { if (e.key === 'Enter') create(); });
+  }
+}
+
+function enter(code, team) {
+  Sounds.unlock();
+  me = { code, team };
+  saveMe();
+  openStream();
+}
+
+// ---------- live connection ----------
+function openStream() {
+  closeStream();
+  lastView = '';
+  $('#app').innerHTML = '<main><p class="center" style="margin-top:40px">Connecting…</p></main>';
+  es = new EventSource(`events?role=phone&code=${encodeURIComponent(me.code)}&team=${me.team}`);
+  es.onmessage = (e) => {
+    const prev = state;
+    state = JSON.parse(e.data);
+    if (prev && prev.phase !== 'buzzed' && state.phase === 'buzzed' && state.winner === me.team) {
+      if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+    }
+    render();
+  };
+  es.addEventListener('kicked', () => {
+    closeStream();
+    me = null; saveMe();
+    showJoin('That game has ended or changed. Enter the new room code.');
+  });
+}
+function closeStream() { if (es) { es.close(); es = null; } }
+
+// ---------- the main screen ----------
+function viewKey() {
+  const s = state, t = me.team;
+  const f = s.final || {};
+  const sub = f.mine || {};
+  return [s.phase, s.winner, s.lockedOut.includes(t), s.dd && s.dd.team, s.dd && s.dd.wager,
+    f.eligible, sub.wagerIn, sub.answerIn, s.teams.join('|'), flash && flash.text].join('/');
+}
+
+function render() {
+  if (!state || !me) return;
+  const s = state, t = me.team;
+  if (t >= s.teams.length) { me = null; saveMe(); return showJoin('Your team is gone. Join again.'); }
+
+  // Header bits update every time; the body only when its view changes.
+  const key = viewKey();
+  if (key === lastView) { updateHeader(); return; }
+  lastView = key;
+
+  $('#app').innerHTML = `
+    <header>
+      <div class="name">${esc(s.teams[t])}</div>
+      <div class="score" id="score"></div>
+      <button class="leave" id="leave">Leave</button>
+    </header>
+    <main id="main">${body()}</main>`;
+  updateHeader();
+  $('#leave').onclick = () => { if (confirm('Leave this team?')) { me = null; saveMe(); showJoin(); } };
+  wire();
+}
+
+function updateHeader() {
+  const el = $('#score'); if (!el) return;
+  const sc = state.scores[me.team] || 0;
+  el.textContent = money(sc);
+  el.classList.toggle('neg', sc < 0);
+}
+
+function body() {
+  const s = state, t = me.team;
+  const f = s.final || {};
+  const sub = f.mine || {};
+
+  if (s.phase === 'lobby') {
+    return `<h1>You're in!</h1>
+      <p class="center">Waiting for the host to start the game.</p>
+      <div class="panel"><h2>Teams</h2><div class="list">${s.teams.map((n, i) => `${i === t ? '★ ' : ''}${esc(n)}`).join('<br>')}</div></div>`;
+  }
+
+  if (s.phase === 'dd-wager') {
+    if (s.dd && s.dd.team === t) {
+      if (s.dd.wager != null) return `<h1>Daily Double!</h1><div class="money">${money(s.dd.wager)}</div><p class="ok">Wager in. Eyes on the TV!</p>`;
+      return `<h1>Daily Double!</h1>
+        <div class="panel">
+          <p>How much will you bet? Up to ${money(s.dd.max)}.</p>
+          <input id="wager" type="number" inputmode="numeric" min="0" max="${s.dd.max}" step="100" placeholder="0">
+          <div class="quick"><button class="btn alt" data-fill="${Math.min(500, s.dd.max)}">${money(Math.min(500, s.dd.max))}</button><button class="btn alt" data-fill="${s.dd.max}">All in</button></div>
+          <div class="err" id="err"></div>
+          <button class="btn" id="send-wager" data-max="${s.dd.max}">Lock in wager</button>
+        </div>`;
+    }
+    return buzzerHtml('', 'Daily Double!', `${esc(s.teams[s.dd ? s.dd.team : 0])} found it. Only they play this one.`);
+  }
+
+  if (s.phase === 'final-wager') {
+    if (!f.eligible) return `<h1>Final Jeopardy</h1><p class="center">Your team sits this one out. Cheer the others on!</p>`;
+    return `<h1>Final Jeopardy</h1>
+      <div class="panel">
+        <p>Wager up to ${money(f.max)}. You can change it until the clue appears.</p>
+        <input id="wager" type="number" inputmode="numeric" min="0" max="${f.max}" step="100" placeholder="0" value="${sub.wagerIn ? sub.wager : ''}">
+        <div class="quick"><button class="btn alt" data-fill="0">$0</button><button class="btn alt" data-fill="${f.max}">All in</button></div>
+        <div class="err" id="err"></div>
+        <button class="btn" id="send-wager" data-max="${f.max}">${sub.wagerIn ? 'Change wager' : 'Lock in wager'}</button>
+        ${sub.wagerIn ? `<p class="ok">Wager in: ${money(sub.wager)}</p>` : ''}
+      </div>`;
+  }
+
+  if (s.phase === 'final-answer') {
+    if (!f.eligible) return `<h1>Final Jeopardy</h1><p class="center">Your team sits this one out.</p>`;
+    return `<h1>Final Jeopardy</h1>
+      <div class="panel">
+        <p>Your wager: <b>${money(sub.wager || 0)}</b>. Phrase it as a question!</p>
+        <textarea id="answer" maxlength="200" placeholder="What is…">${esc(sub.answer || '')}</textarea>
+        <button class="btn" id="send-answer">${sub.answerIn ? 'Change answer' : 'Send answer'}</button>
+        ${sub.answerIn ? `<p class="ok">Answer in. You can change it until time runs out.</p>` : ''}
+      </div>`;
+  }
+
+  if (s.phase === 'final-closed') {
+    return `<h1>Pencils down!</h1><p class="center">${f.eligible ? (sub.answerIn ? 'Your answer is in. Watch the TV!' : 'No answer was sent in time.') : 'Watch the TV for the big reveal.'}</p>`;
+  }
+
+  // Buzzer phases
+  if (flash && flash.until > Date.now()) return buzzerHtml('early', flash.text, 'Wait for the host to open the buzzers.');
+  if (s.phase === 'reading') return buzzerHtml('reading', 'Listen…', 'Buzzers open when the host finishes reading.');
+  if (s.phase === 'open') {
+    if (s.lockedOut.includes(t)) return buzzerHtml('', 'Locked', 'Your team already answered this one.');
+    return buzzerHtml('open', 'Buzz!', '');
+  }
+  if (s.phase === 'buzzed') {
+    if (s.winner === t) return buzzerHtml('won', 'You’re in!', 'Answer now. Phrase it as a question!');
+    return buzzerHtml('lost', esc(s.teams[s.winner] || ''), 'buzzed in first');
+  }
+  return buzzerHtml('', 'Waiting', 'Get ready for the next clue.');
+}
+
+function buzzerHtml(cls, big, small) {
+  return `<button class="buzzer ${cls}" id="buzzer">${big}${small ? `<small>${small}</small>` : ''}</button>`;
+}
+
+function wire() {
+  const b = $('#buzzer');
+  if (b) {
+    // pointerdown fires the moment a finger lands, faster than a click.
+    b.addEventListener('pointerdown', (e) => { e.preventDefault(); pressBuzzer(b); });
+  }
+  document.querySelectorAll('[data-fill]').forEach((x) => x.onclick = () => { $('#wager').value = x.dataset.fill; });
+  const sw = $('#send-wager');
+  if (sw) sw.onclick = async () => {
+    const max = Number(sw.dataset.max);
+    const w = Math.round(Number($('#wager').value));
+    if (!Number.isFinite(w) || $('#wager').value === '' || w < 0 || w > max) { $('#err').textContent = `Pick a number from $0 to ${money(max)}.`; return; }
+    sw.disabled = true;
+    try {
+      const r = await post('api/wager', { code: me.code, team: me.team, wager: w });
+      if (r.result !== 'ok') { $('#err').textContent = r.result === 'too-high' ? 'That’s more than you have.' : 'Too late to change it now.'; sw.disabled = false; }
+      else Sounds.play('pick');
+    } catch (e) { $('#err').textContent = e.message; sw.disabled = false; }
+  };
+  const sa = $('#send-answer');
+  if (sa) sa.onclick = async () => {
+    sa.disabled = true;
+    try { await post('api/answer', { code: me.code, team: me.team, answer: $('#answer').value }); Sounds.play('pick'); }
+    catch (e) { sa.disabled = false; }
+  };
+}
+
+async function pressBuzzer(b) {
+  if (!state || !['reading', 'open'].includes(state.phase)) return;
+  Sounds.unlock();
+  b.classList.add('pressed');
+  setTimeout(() => b.classList.remove('pressed'), 120);
+  Sounds.play('phone-buzz');
+  try {
+    const r = await post('api/buzz', { code: me.code, team: me.team });
+    if (r.result === 'early') {
+      Sounds.play('too-early');
+      flash = { text: 'Too soon!', until: Date.now() + 600 };
+      render();
+      setTimeout(() => { flash = null; render(); }, 650);
+    }
+  } catch (e) {}
+}
+
+// ---------- start ----------
+Sounds.probe('');
+document.addEventListener('pointerdown', () => Sounds.unlock(), { once: true });
+if (me) openStream(); else showJoin();
+</script>
+</body>
+</html>
