@@ -1,3 +1,4 @@
 [
-  { "id": "game1", "title": "Narnia Jeopardy · Game 1", "file": "game1.json" }
+  { "id": "game1", "title": "Narnia Jeopardy · Game 1", "file": "game1.json" },
+  { "id": "game2", "title": "Narnia Jeopardy · Game 2", "file": "game2.json" }
 ]
