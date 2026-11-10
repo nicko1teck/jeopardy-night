@@ -69,7 +69,7 @@ sends `X-Accel-Buffering: no`, which nginx respects.
      them and the score fixes itself. Already back on the board? Host panel →
      **Fix last clue's scoring**.
 6. **Daily Double**: pick the team that found it. Their phone asks for a wager.
-7. **Final Jeopardy**: phones take wagers, then answers. Start the 30-second clock,
+7. **Final Jeopardy**: phones take wagers, then answers. Start the 45-second clock,
    then reveal each team's answer and judge it.
 
 **Controller**: point and press A, or use the D-pad and A. **B**, **Menu** or **Esc**
@@ -172,7 +172,8 @@ The slots:
 | `daily-double.mp3` | Daily Double found |
 | `team-joined.mp3` | a team joins the lobby |
 | `round-end.mp3` | end of a round |
-| `final-think.mp3` | Final Jeopardy think music (30 seconds) |
+| `final-think.mp3` | Final Jeopardy think music (loops if shorter than the 45-second clock) |
+| `theme.mp3` | theme song: when the game starts (stops at the first pick), and during Final Jeopardy's clock if there's no `final-think.mp3` |
 | `winner.mp3` | winner fanfare |
 
 ## Files

@@ -189,7 +189,7 @@ const DEFAULT_BUZZ_SECONDS = 20; // how long buzzers stay open with nobody buzzi
 const buzzSeconds = () => (S && S.buzzSecs) || DEFAULT_BUZZ_SECONDS;
 const DEFAULT_ANSWER_SECONDS = 25; // how long a team has to answer once they buzz in; also in the host panel
 const answerSeconds = () => (S && S.answerSecs) || DEFAULT_ANSWER_SECONDS;
-const FINAL_SECONDS = 30;
+const FINAL_SECONDS = 45;
 
 let GAMES = [];   // every board in public/games (the server lists them; index.json is the fallback without a server)
 let GAME = null;  // the loaded question file
@@ -414,13 +414,14 @@ function startGame() {
   S.round = 0; S.used = {}; S.cur = null; S.final = null; S.control = null; S.fill = true; S.revealed = [];
   S.screen = 'board';
   NET.host('idle');
-  Sounds.play('board-fill');
+  if (!Sounds.startTheme()) Sounds.play('board-fill'); // theme song if there is one
   render();
 }
 
 function pick(c, i) {
   const k = c + '-' + i;
   if (S.used[k]) return;
+  Sounds.stopTheme(); // the first pick cuts off the opening theme
   S.used[k] = true; S.lastTile = k;
   const clue = round().categories[c].clues[i];
   S.cur = { c, i, dd: !!clue.dd, team: null, wager: null, max: 0, manual: false, tried: S.teams.map(() => false), done: false, timeUp: false, right: null };
@@ -603,7 +604,7 @@ function finish() {
 }
 
 async function goHome() {
-  clearInterval(clockTimer); Sounds.stopThink();
+  clearInterval(clockTimer); Sounds.stopThink(); Sounds.stopTheme();
   S = { screen: 'home' };
   clearSaved();
   SERVER_SNAP = null;

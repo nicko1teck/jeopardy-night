@@ -21,9 +21,10 @@
     'daily-double',  // Daily Double found
     'team-joined',   // a team arrives in the lobby
     'round-end',     // end of a round
-    'final-think',   // Final Jeopardy think music (30 seconds)
+    'final-think',   // Final Jeopardy think music (loops to fill the clock)
     'category-reveal', // a category flips open on the board
     'winner',        // winner fanfare
+    'theme',         // theme song: game start and Final Jeopardy's clock
   ];
 
   // How loud a sample must be to count as "the sound has started" (0 to 1).
@@ -86,11 +87,13 @@
   }
 
   // Play a decoded custom file from where its sound starts. Returns the source so it can be stopped.
-  function playFile(slot) {
+  // With loop, it repeats (skipping the leading silence each time) until stopped.
+  function playFile(slot, loop) {
     const c = ac(); const f = files[slot];
     if (!c || !f) return null;
     const src = c.createBufferSource();
     src.buffer = f.buffer;
+    if (loop) { src.loop = true; src.loopStart = f.offset; src.loopEnd = f.buffer.duration; }
     src.connect(master);
     src.start(0, f.offset);
     return src;
@@ -193,6 +196,7 @@
   }
 
   let thinkFile = null;
+  let themeSrc = null;
   const Sounds = {
     SLOT_NAMES,
     unlock() { ac(); },
@@ -204,7 +208,9 @@
     },
     startThink() {
       Sounds.stopThink();
-      try { thinkFile = playFile('final-think'); } catch (e) { thinkFile = null; }
+      // final-think.mp3 if there is one, otherwise the theme song, otherwise the built-in tune.
+      // Looped, so a 30-second song still fills the whole Final clock.
+      try { thinkFile = playFile('final-think', true) || playFile('theme', true); } catch (e) { thinkFile = null; }
       if (!thinkFile) playThinkBuiltin();
     },
     stopThink() {
@@ -214,6 +220,16 @@
         thinkGain = null;
       }
       clearTimeout(thinkTimer);
+    },
+    // The theme song. Returns false when there's no theme.mp3, so the caller can play
+    // its usual sound instead. Only one copy ever plays at a time.
+    startTheme() {
+      Sounds.stopTheme();
+      try { themeSrc = playFile('theme'); } catch (e) { themeSrc = null; }
+      return !!themeSrc;
+    },
+    stopTheme() {
+      if (themeSrc) { try { themeSrc.stop(); } catch (e) {} themeSrc = null; }
     },
   };
   window.Sounds = Sounds;
