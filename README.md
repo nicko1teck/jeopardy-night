@@ -176,10 +176,41 @@ The slots:
 | `theme.mp3` | theme song: when the game starts (stops at the first pick), and during Final Jeopardy's clock if there's no `final-think.mp3` |
 | `winner.mp3` | winner fanfare |
 
+## Game history (database)
+
+Every game is saved to MariaDB/MySQL: the teams and scores, every clue played (with its text,
+who buzzed in what order, Daily Double wagers) and each team's result on it, the host's +/-
+adjustments, and Final Jeopardy wagers, typed answers and results. Host fixes (overruling a call,
+"Fix last clue's scoring", editing a Final wager) **replace** the earlier result rather than adding
+a second one, so the database always matches the scoreboard.
+
+It's optional: with no database settings the game plays exactly the same and saves no history.
+A database problem never stops a game; it's logged and play carries on.
+
+**Settings** live outside the app folder so they never reach git, in `~/.jeopardy-night/db.json`:
+
+```json
+{ "host": "localhost", "user": "jeopardy", "password": "...", "database": "jeopardy" }
+```
+
+(or the environment variables `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`). The server creates
+the tables itself on startup.
+
+| Table | One row per |
+| --- | --- |
+| `games` | game played: file, title, start/end, finished or abandoned, winner, the Final clue |
+| `teams` | team in a game, with its score |
+| `clues` | clue played: round, category, value, question and answer, Daily Double and wager, buzz order |
+| `clue_results` | team on a clue: 1 right, -1 wrong, 0 no answer, and the points |
+| `final_results` | team in Final Jeopardy: wager, typed answer, result |
+| `score_adjustments` | each +/- from the host panel |
+| `clue_stats` (a view) | each clue across every game: times played, answered right, missed, nobody got it |
+
 ## Files
 
 ```
 server.js            the server
+db.js                game history: saves every game to the database
 package.json         "npm start" runs the server; no dependencies
 public/index.html    TV board
 public/buzz.html     phone buzzer

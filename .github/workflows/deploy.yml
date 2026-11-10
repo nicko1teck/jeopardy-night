@@ -67,10 +67,11 @@ jobs:
 
       # Run Command runs as root; the pull and restart run as ec2-user, who owns the app and pm2.
       # Plain "pm2 restart" keeps the host key and port pm2 already has from jeopardy.config.js.
+      # npm install brings in mysql2 (game history); --no-package-lock keeps the server's copy of the repo clean.
       - name: Tell the server to pull and restart (SSM Run Command)
         run: |
           PARAMS=$(jq -n \
-            --arg run "sudo -iu ec2-user bash -lc 'cd ~/jeopardy-night && git pull --ff-only && pm2 restart jeopardy && pm2 save'" \
+            --arg run "sudo -iu ec2-user bash -lc 'cd ~/jeopardy-night && git pull --ff-only && npm install --omit=dev --no-package-lock --no-audit --no-fund && pm2 restart jeopardy && pm2 save'" \
             '{commands: [$run]}')
           CMD_ID=$(aws ssm send-command \
             --instance-ids "${{ vars.EC2_INSTANCE_ID }}" \

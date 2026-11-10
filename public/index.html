@@ -268,6 +268,54 @@ const NET = {
 
 function phase() { return NET.on && NET.state ? NET.state.phase : null; }
 
+// ---------- game history ----------
+// Each time something worth keeping happens, the TV sends a "record" to the server, which
+// saves it to the database. Records carry the game's play ID, so a later record about the same
+// clue (or Final row) replaces the earlier one: host fixes overwrite what they fix.
+function newPlayId() {
+  try { return crypto.randomUUID(); } catch (e) { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+}
+let recordQueue = Promise.resolve();
+function record(extra) {
+  if (!NET.on || !S.playId || !S.teams || !GAME) return;
+  const rec = Object.assign({
+    play: { id: S.playId, gameFile: S.gameFile, gameId: S.gameId, title: S.title, edition: S.edition || '' },
+    teams: S.teams.map((t) => ({ name: t.name, score: t.score })),
+  }, extra || {});
+  // One at a time, in order, so an older record can never land after a newer one.
+  recordQueue = recordQueue.then(() => NET.host('record', { rec }));
+}
+// Everything about one clue: the clue itself, the buzzes, and each team's result.
+function recordClue(c) {
+  c = c || S.cur;
+  if (!c || !S.teams) return;
+  const r = c.round != null ? c.round : S.round;
+  const R = GAME.rounds[r], cat = R.categories[c.c], clue = cat.clues[c.i];
+  record({ clue: {
+    round: r, roundName: R.name, c: c.c, i: c.i, category: cat.name, value: R.values[c.i],
+    q: clue.q, a: clue.a, dd: !!c.dd, ddTeam: c.dd ? c.team : null, wager: c.dd ? c.wager : null,
+    buzzes: c.buzzes || [], timeUp: !!c.timeUp, shown: !!c.done,
+    results: S.teams.map((_, t) => (c.results || {})[t] || 0),
+  } });
+}
+// Final Jeopardy: the clue, and each team's wager, typed answer and result.
+function recordFinal() {
+  const f = S.final;
+  if (!f || !GAME.final) return;
+  record({ final: {
+    category: GAME.final.category, q: GAME.final.clue, a: GAME.final.answer,
+    rows: f.eligible.map((t) => {
+      const row = f.rows[t] || {}, sub = phoneSub(t);
+      return {
+        team: t,
+        wager: row.wager != null ? row.wager : (sub && sub.wagerIn ? sub.wager : null),
+        response: sub && sub.answerIn ? sub.answer : null,
+        result: row.result == null ? null : (row.result ? 1 : -1),
+      };
+    }),
+  } });
+}
+
 // ---------- countdowns ----------
 // One countdown at a time: "buzz" (buzzers open, waiting for someone to buzz) or
 // "answer" (a team has buzzed, or a Daily Double is showing, and they're answering).
@@ -300,6 +348,7 @@ function startBuzzTimer() {
       Sounds.play('times-up');
       S.cur.timeUp = true;
       NET.host('idle');
+      recordClue();
     }
     render();
   });
@@ -332,6 +381,7 @@ function onNet(prev, s) {
   }
   if (s.phase === 'open' && prev.phase !== 'open' && S.screen === 'clue') startBuzzTimer();
   if (s.phase === 'buzzed' && prev.phase !== 'buzzed' && S.screen === 'clue') {
+    if (S.cur && s.winner != null) { (S.cur.buzzes = S.cur.buzzes || []).push(s.winner); recordClue(); }
     Sounds.play('buzz-in');
     startAnswerTimer();
   }
@@ -413,7 +463,9 @@ function startGame() {
   S.teams = names.map((n) => ({ name: n, score: 0 }));
   S.round = 0; S.used = {}; S.cur = null; S.final = null; S.control = null; S.fill = true; S.revealed = [];
   S.screen = 'board';
+  S.playId = newPlayId(); // this game's ID in the history database
   NET.host('idle');
+  record();
   if (!Sounds.startTheme()) Sounds.play('board-fill'); // theme song if there is one
   render();
 }
@@ -424,7 +476,8 @@ function pick(c, i) {
   Sounds.stopTheme(); // the first pick cuts off the opening theme
   S.used[k] = true; S.lastTile = k;
   const clue = round().categories[c].clues[i];
-  S.cur = { c, i, dd: !!clue.dd, team: null, wager: null, max: 0, manual: false, tried: S.teams.map(() => false), done: false, timeUp: false, right: null };
+  S.cur = { c, i, round: S.round, dd: !!clue.dd, team: null, wager: null, max: 0, manual: false, tried: S.teams.map(() => false), done: false, timeUp: false, right: null, buzzes: [] };
+  recordClue();
   if (clue.dd) {
     S.screen = 'dd';
     Sounds.play('daily-double');
@@ -445,6 +498,7 @@ function ddTeam(t) {
   S.cur.wager = NET.on ? null : Math.min(S.cur.max, R.values[2]);
   S.screen = 'dd-wager';
   NET.host('dd-wager', { team: t, max: S.cur.max });
+  recordClue();
   render();
 }
 
@@ -452,6 +506,7 @@ function ddShowClue() {
   if (S.cur.wager == null) return;
   S.screen = 'clue';
   NET.host('idle');
+  recordClue(); // the wager is locked in now
   Sounds.play('reveal');
   startAnswerTimer();
   render();
@@ -481,6 +536,7 @@ function judge(t, right) {
   if (c.done || c.tried[t]) return;
   setResult(t, right ? 1 : -1);
   c.tried[t] = true;
+  recordClue();
   stopCountdown();
   Sounds.play(right ? 'right' : 'wrong');
   const eligible = c.dd ? [c.team] : S.teams.map((_, i) => i);
@@ -497,6 +553,7 @@ function judge(t, right) {
 
 function showAnswer() {
   S.cur.done = true;
+  recordClue();
   stopCountdown();
   NET.host('idle');
   render();
@@ -512,7 +569,7 @@ function undoBuzz() {
 
 function backToBoard() {
   stopCountdown();
-  if (S.cur) S.lastClue = S.cur; // so the host can still fix its scoring from the board
+  if (S.cur) { S.lastClue = S.cur; recordClue(S.cur); } // so the host can still fix its scoring from the board
   S.cur = null;
   if (roundDone()) { S.screen = 'round-end'; Sounds.play('round-end'); }
   else S.screen = 'board';
@@ -537,6 +594,7 @@ function enterFinal() {
   S.screen = 'final-cat';
   NET.host('final-wager', { eligible });
   Sounds.play('reveal');
+  recordFinal();
   render();
 }
 
@@ -561,6 +619,7 @@ function endClock() {
   Sounds.play('times-up');
   S.final.clock = 'done';
   NET.host('final-closed');
+  setTimeout(recordFinal, 1500); // give the last phone answers a moment to arrive
   render();
 }
 
@@ -574,6 +633,7 @@ function revealFinal(t) {
   const sub = phoneSub(t);
   if (row.wager == null) row.wager = sub && sub.wagerIn ? sub.wager : 0;
   Sounds.play('reveal');
+  recordFinal();
   render();
 }
 
@@ -583,6 +643,7 @@ function undoFinal(t) {
   S.teams[t].score -= row.result ? row.wager : -row.wager;
   row.result = null;
   NET.host('scores');
+  recordFinal();
   render();
 }
 
@@ -593,18 +654,21 @@ function judgeFinal(t, right) {
   S.teams[t].score += right ? row.wager : -row.wager;
   Sounds.play(right ? 'right' : 'wrong');
   NET.host('scores');
+  recordFinal();
   render();
 }
 
 function finish() {
   S.screen = 'game-over';
   NET.host('idle');
+  record({ end: 'finished' });
   Sounds.play('winner');
   render();
 }
 
 async function goHome() {
   clearInterval(clockTimer); Sounds.stopThink(); Sounds.stopTheme();
+  if (S.playId && S.screen !== 'game-over') record({ end: 'abandoned' }); // left before the end
   S = { screen: 'home' };
   clearSaved();
   SERVER_SNAP = null;
@@ -1113,6 +1177,7 @@ const ACTIONS = {
     setResult(Number(d.t), r);
     Sounds.play(r === 1 ? 'right' : r === -1 ? 'wrong' : 'pick');
     NET.host('scores');
+    recordClue(); // overwrites this clue's results in the database
     render();
   },
   undobuzz: undoBuzz,
@@ -1141,6 +1206,7 @@ const ACTIONS = {
     const t = Number(d.t), row = S.final.rows[t];
     const max = Math.max(0, S.teams[t].score);
     row.wager = Math.max(0, Math.min(max, row.wager + Number(d.d)));
+    recordFinal();
     render();
   },
   fjudge: (d) => judgeFinal(Number(d.t), d.r === '1'),
@@ -1148,7 +1214,12 @@ const ACTIONS = {
   finish,
   openhost() { hostOpen = true; render(); },
   closehost() { hostOpen = false; render(); },
-  adj(d) { S.teams[Number(d.t)].score += Number(d.d); NET.host('scores'); render(); },
+  adj(d) {
+    S.teams[Number(d.t)].score += Number(d.d);
+    NET.host('scores');
+    record({ adjust: { team: Number(d.t), delta: Number(d.d) } });
+    render();
+  },
   buzzsecs(d) {
     S.buzzSecs = Math.max(5, Math.min(60, buzzSeconds() + Number(d.d)));
     render();
