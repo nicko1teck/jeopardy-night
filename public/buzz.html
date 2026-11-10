@@ -213,6 +213,7 @@ function render() {
   const s = state, t = me.team;
   if (t >= s.teams.length) { me = null; saveMe(); return showJoin('Your team is gone. Join again.'); }
 
+  document.title = (s.title || 'Jeopardy') + ' · Buzzer';
   // Header bits update every time; the body only when its view changes.
   const key = viewKey();
   if (key === lastView) { updateHeader(); return; }

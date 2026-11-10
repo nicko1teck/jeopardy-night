@@ -1,4 +1,10 @@
 [
-  { "id": "game1", "title": "Narnia Jeopardy · Game 1", "file": "game1.json" },
-  { "id": "game2", "title": "Narnia Jeopardy · Game 2", "file": "game2.json" }
+  {"file": "green-ember-1.json", "title": "Green Ember Jeopardy", "edition": "Book 1"},
+  {"file": "harry-potter-1.json", "title": "Harry Potter Jeopardy", "edition": "Game 1"},
+  {"file": "middle-earth-1.json", "title": "Middle-earth Jeopardy", "edition": "Game 1"},
+  {"file": "mission-impossible-1.json", "title": "Mission Impossible Jeopardy", "edition": "Game 1"},
+  {"file": "narnia-1.json", "title": "Narnia Jeopardy", "edition": "Game 1"},
+  {"file": "narnia-2.json", "title": "Narnia Jeopardy", "edition": "Game 2"},
+  {"file": "narnia-3.json", "title": "Narnia Jeopardy", "edition": "Game 3"},
+  {"file": "rangers-apprentice-1.json", "title": "Ranger's Apprentice Jeopardy", "edition": "Book 1: The Ruins of Gorlan"}
 ]

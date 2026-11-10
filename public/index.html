@@ -47,7 +47,11 @@
   .sub { font-size: 2.2vw; color: #ffffffd9; margin: 0; }
   .gold { color: var(--gold); }
   .row { display: flex; gap: 1.5vw; align-items: center; justify-content: center; flex-wrap: wrap; }
-  .gamebtn { font-size: 2.6vw; font-weight: 700; text-transform: uppercase; padding: 2vh 3vw; border-radius: 1vmin; background: var(--blue); border: .4vmin solid var(--gold); }
+  .games { display: grid; grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr)); gap: 1.2vw; width: 94%; max-height: 58vh; overflow-y: auto; padding: 1.2vmin; }
+  .gamebtn { font-size: 1.9vw; font-weight: 700; text-transform: uppercase; padding: 1.6vh 1.2vw; min-height: 14vh; border-radius: 1vmin; background: var(--blue); border: .4vmin solid var(--gold); line-height: 1.1; }
+  .gamebtn small { display: block; font-size: 1.25vw; color: var(--gold); font-weight: 500; margin-top: .6vh; }
+  .badfile { font-size: 1.3vw; color: #ffb0aa; font-family: system-ui, sans-serif; }
+  .edition { font-size: 2.4vw; color: var(--gold); margin: -1vh 0 0; text-transform: uppercase; }
   .note { font-size: 1.5vw; color: #ffffffb3; font-family: system-ui, sans-serif; }
 
   /* ---------- lobby ---------- */
@@ -175,12 +179,23 @@ const DEFAULT_BUZZ_SECONDS = 20; // how long buzzers stay open with nobody buzzi
 const buzzSeconds = () => (S && S.buzzSecs) || DEFAULT_BUZZ_SECONDS;
 const FINAL_SECONDS = 30;
 
-let GAMES = [];   // list from games/index.json
+let GAMES = [];   // every board in public/games (the server lists them; index.json is the fallback without a server)
 let GAME = null;  // the loaded question file
 let S = { screen: 'home' }; // everything about the game in progress; saved so a reload can resume
 let hostOpen = false;
+let SERVER_SNAP = null; // the server's saved copy of S, for resuming after a crash
 
-function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} }
+// S is saved twice: in this browser, and on the server (which writes it to disk).
+// Either copy can resume the game; the newer one wins.
+let snapTimer = null;
+function save() {
+  S.savedAt = Date.now();
+  try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {}
+  if (NET.on && S.gameFile) {
+    clearTimeout(snapTimer);
+    snapTimer = setTimeout(() => NET.host('snapshot', { snapshot: S }), 300);
+  }
+}
 function loadSaved() { try { return JSON.parse(localStorage.getItem(STORE)); } catch (e) { return null; } }
 function clearSaved() { try { localStorage.removeItem(STORE); } catch (e) {} }
 
@@ -236,6 +251,19 @@ const NET = {
 function phase() { return NET.on && NET.state ? NET.state.phase : null; }
 
 let openTimer = null;
+function startBuzzTimer() {
+  S.openAt = Date.now();
+  clearTimeout(openTimer);
+  openTimer = setTimeout(() => {
+    if (phase() === 'open' && S.screen === 'clue' && S.cur && !S.cur.done) {
+      Sounds.play('times-up');
+      S.cur.timeUp = true;
+      NET.host('idle');
+      render();
+    }
+  }, buzzSeconds() * 1000);
+}
+
 function onNet(prev, s) {
   prev = prev || {};
   if (S.screen === 'lobby') {
@@ -248,18 +276,7 @@ function onNet(prev, s) {
     if (s.teams.length > (prev.teams || []).length) Sounds.play('team-joined');
     return;
   }
-  if (s.phase === 'open' && prev.phase !== 'open') {
-    S.openAt = Date.now();
-    clearTimeout(openTimer);
-    openTimer = setTimeout(() => {
-      if (phase() === 'open' && S.screen === 'clue' && S.cur && !S.cur.done) {
-        Sounds.play('times-up');
-        S.cur.timeUp = true;
-        NET.host('idle');
-        render();
-      }
-    }, buzzSeconds() * 1000);
-  }
+  if (s.phase === 'open' && prev.phase !== 'open') startBuzzTimer();
   if (s.phase === 'buzzed' && prev.phase !== 'buzzed') {
     clearTimeout(openTimer);
     if (S.screen === 'clue') Sounds.play('buzz-in');
@@ -284,16 +301,58 @@ function curInfo() {
 function roundDone() { return round().categories.every((c, ci) => c.clues.every((_, i) => S.used[ci + '-' + i])); }
 function teamNames() { return NET.on ? NET.state.teams : (S.lobbyTeams || []); }
 
+// The house rules apply to every board unless a board brings its own "rules" and "restricted" values.
+const HOUSE_RULES = {
+  restricted: 'Youngest teammate answers alone. No help!',
+  kids: 'Youngest player on each team only',
+  confer: 'Teams may confer, but the youngest says the answer',
+};
+const ROUND_NAMES = ['Jeopardy!', 'Double Jeopardy!', 'Triple Jeopardy!'];
+
+// Fill in everything a board is allowed to leave out, so a minimal file plays like a full one.
+function normalizeGame(g, file) {
+  g.id = String(g.id || file.replace(/\.json$/, ''));
+  g.title = g.title || (g.subject ? g.subject + ' Jeopardy' : 'Jeopardy');
+  g.edition = g.edition || '';
+  g.rules = Object.assign({}, HOUSE_RULES, g.rules || {});
+  g.rounds.forEach((r, ri) => {
+    r.name = r.name || ROUND_NAMES[ri] || 'Round ' + (ri + 1);
+    const rows = r.categories[0].clues.length;
+    if (!Array.isArray(r.values) || r.values.length !== rows) {
+      r.values = Array.from({ length: rows }, (_, i) => 200 * (ri + 1) * (i + 1));
+    }
+    if (!Array.isArray(r.restricted)) r.restricted = r.values.slice(0, 2); // the two lowest values, by default
+  });
+  return g;
+}
+
 async function loadGameFile(file) {
-  const r = await fetch('games/' + file, { cache: 'no-cache' });
+  const r = await fetch('games/' + encodeURIComponent(file), { cache: 'no-cache' });
   if (!r.ok) throw new Error('Could not load ' + file);
-  return r.json();
+  return normalizeGame(await r.json(), file);
+}
+
+// With the server, every *.json in public/games is listed automatically.
+// Without one (plain static hosting), games/index.json is the list.
+async function refreshGames() {
+  try {
+    if (NET.server) {
+      const r = await fetch('api/games', { cache: 'no-store' });
+      if (r.ok) { GAMES = await r.json(); return; }
+    }
+    const r = await fetch('games/index.json', { cache: 'no-cache' });
+    GAMES = (await r.json()).map((g) => ({ file: g.file, id: g.id, title: g.title, edition: g.edition || '' }));
+  } catch (e) {
+    GAMES = [];
+    toast('Could not load the list of games. Open this page from the server, not as a file.', 6000);
+  }
 }
 
 async function chooseGame(idx) {
   const g = GAMES[idx];
+  if (!g || g.error) return;
   try { GAME = await loadGameFile(g.file); } catch (e) { toast(e.message); return; }
-  S = { screen: 'lobby', gameFile: g.file, gameId: GAME.id || g.id, title: GAME.title || g.title, lobbyTeams: [] };
+  S = { screen: 'lobby', gameFile: g.file, gameId: GAME.id, title: GAME.title, edition: GAME.edition, lobbyTeams: [] };
   if (NET.on) await NET.host('new-room', { gameId: S.gameId, title: S.title });
   render();
 }
@@ -459,13 +518,21 @@ function finish() {
   render();
 }
 
-function goHome() {
+async function goHome() {
   clearInterval(clockTimer); Sounds.stopThink();
   S = { screen: 'home' };
   clearSaved();
+  SERVER_SNAP = null;
   hostOpen = false;
-  if (NET.on) NET.host('idle');
+  if (NET.on) { NET.host('idle'); NET.host('snapshot', { snapshot: null }); }
+  await refreshGames(); // a board dropped in since the last game shows up now
   render();
+}
+
+// The newest saved game (this browser's copy or the server's) that's worth resuming.
+function resumeCandidate() {
+  const ok = (x) => x && x.gameFile && Array.isArray(x.teams) && !['home', 'lobby', 'game-over'].includes(x.screen);
+  return [loadSaved(), SERVER_SNAP].filter(ok).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0))[0] || null;
 }
 
 // ======================================================================
@@ -474,8 +541,10 @@ function goHome() {
 const V = {};
 
 V.home = () => {
-  const saved = loadSaved();
-  const canResume = saved && saved.gameFile && !['home', 'lobby'].includes(saved.screen);
+  const saved = resumeCandidate();
+  const canResume = !!saved;
+  const playable = GAMES.filter((g) => !g.error);
+  const broken = GAMES.filter((g) => g.error);
   let mode;
   if (NET.on) mode = `<p class="note">Buzzers are on. Phones will join with a room code.</p>`;
   else if (NET.badKey) mode = `<p class="note">The host key in the link was not accepted, so buzzers are off. Check the link the server printed.</p>`;
@@ -484,8 +553,9 @@ V.home = () => {
   return `<div class="screen">
     <h1 class="title">Jeopardy <span class="gold">Night</span></h1>
     <p class="sub">Pick a game</p>
-    <div class="row">${GAMES.map((g, i) => `<button class="gamebtn" data-act="game" data-i="${i}" ${i === 0 && !canResume ? 'data-focus' : ''}>${esc(g.title)}</button>`).join('') || '<p class="note">No games found in games/index.json</p>'}</div>
-    ${canResume ? `<div class="row"><button class="btn gold" data-act="resume" data-focus>Resume: ${esc(saved.title)}</button></div>` : ''}
+    ${canResume ? `<div class="row"><button class="btn gold" data-act="resume" data-focus>Resume: ${esc(saved.title)}${saved.edition ? ' · ' + esc(saved.edition) : ''}</button></div>` : ''}
+    <div class="games">${GAMES.map((g, i) => g.error ? '' : `<button class="gamebtn" data-act="game" data-i="${i}" ${g === playable[0] && !canResume ? 'data-focus' : ''}>${esc(g.subject || g.title)}${g.edition ? `<small>${esc(g.edition)}</small>` : ''}</button>`).join('') || '<p class="note">No games found. Put a board in the games folder.</p>'}</div>
+    ${broken.map((g) => `<p class="badfile">Skipped ${esc(g.file)}: ${esc(g.error)}</p>`).join('')}
     ${mode}
     <div class="row"><button class="btn small" data-act="fullscreen">Full screen</button></div>
   </div>`;
@@ -495,6 +565,7 @@ V.lobby = () => {
   const joinUrl = location.origin + location.pathname.replace(/[^/]*$/, '') + 'buzz';
   return `<div class="screen">
     <h1 class="title" style="font-size:4.4vw">${esc(S.title)}</h1>
+    ${S.edition ? `<p class="edition">${esc(S.edition)}</p>` : ''}
     ${NET.on ? `<div class="joinbox">
         <div class="url">On your phone go to <b>${esc(joinUrl.replace(/^https?:\/\//, ''))}</b></div>
         <div class="code">${esc(NET.state.code)}</div>
@@ -528,7 +599,7 @@ V.board = () => {
   const R = round();
   const nextHidden = R.categories.findIndex((_, ci) => !catShown(ci));
   const ready = nextHidden === -1; // clues can be picked once every category is showing
-  let h = '<div class="board">';
+  let h = `<div class="board" style="grid-template-columns:repeat(${R.categories.length},1fr);grid-template-rows:1.35fr repeat(${R.values.length},1fr)">`;
   R.categories.forEach((c, ci) => {
     if (!catShown(ci)) {
       h += `<button class="cat cover" data-act="revealcat" data-c="${ci}" ${ci === nextHidden ? 'data-focus' : ''}>${esc(R.name)}</button>`;
@@ -615,7 +686,7 @@ V.clue = () => {
 
   return `<div class="screen">
     <div class="top"><span>${esc(cat.name)}</span><span class="val">${money(c.dd ? c.wager : value)}</span></div>
-    <div class="rule">${esc(ruleFor(cat, value, c))}</div>
+    ${ruleFor(cat, value, c) ? `<div class="rule">${esc(ruleFor(cat, value, c))}</div>` : ''}
     <p class="cluetext">${esc(clue.q)}</p>
     ${middle}
     <div class="controls">${controls}</div>
@@ -718,7 +789,7 @@ V['game-over'] = () => {
   const winners = S.teams.filter((t) => t.score === best && best > 0);
   const sorted = [...S.teams].sort((a, b) => b.score - a.score);
   return `<div class="screen">
-    <p class="sub">${winners.length > 1 ? 'It’s a tie! Our champions are' : winners.length ? 'Tonight’s champion' : 'Game over'}</p>
+    <p class="sub">${esc(S.title)} · ${winners.length > 1 ? 'It’s a tie! Our champions are' : winners.length ? 'Tonight’s champion' : 'Game over'}</p>
     <h1 class="title gold">${winners.length ? winners.map((t) => esc(t.name)).join(' & ') : 'Nobody this time!'}</h1>
     <div class="status">${sorted.map((t) => `<span>${esc(t.name)}: ${money(t.score)}</span>`).join('')}</div>
     <div class="row"><button class="btn gold" data-act="home" data-focus>Play another game</button></div>
@@ -772,6 +843,7 @@ function render() {
   renderBar();
   focusDefault();
   if (S.screen !== 'home') save();
+  document.title = S.screen !== 'home' && S.title ? S.title : 'Jeopardy Night';
   syncHostView();
 }
 
@@ -824,12 +896,30 @@ function focusDefault() {
 const ACTIONS = {
   game: (d) => chooseGame(Number(d.i)),
   async resume() {
-    const saved = loadSaved();
-    try { GAME = await loadGameFile(saved.gameFile); } catch (e) { toast(e.message); return; }
+    const saved = resumeCandidate();
+    if (!saved) return;
+    try { GAME = await loadGameFile(saved.gameFile); } catch (e) { toast(e.message + '. Was the board renamed or removed?', 5000); return; }
     S = saved;
     if (S.final && S.final.clock === 'running') S.final.clock = 'idle';
-    if (NET.on) await NET.host('restore', { gameId: S.gameId, title: S.title, teams: S.teams.map((t) => t.name) });
-    if (S.screen === 'clue' && S.cur && !S.cur.dd && !S.cur.done) openBuzzers();
+    let kept = false;
+    if (NET.on) {
+      try {
+        const r = await NET.host('restore', { gameId: S.gameId, title: S.title, teams: S.teams.map((t) => t.name) });
+        kept = !!(r && r.ok && (await r.json()).kept);
+      } catch (e) {}
+    }
+    if (kept) {
+      // The server still had the game: buzzers, wagers and answers are exactly where they were.
+      if (S.screen === 'clue' && phase() === 'open') startBuzzTimer();
+    } else if (NET.on) {
+      // The server lost the game: put it back into the right phase for the screen we're on.
+      if (S.screen === 'clue' && S.cur && !S.cur.dd && !S.cur.done) openBuzzers();
+      if (S.screen === 'dd-wager' && S.cur) NET.host('dd-wager', { team: S.cur.team, max: S.cur.max });
+      if (['final-cat', 'final-clue'].includes(S.screen) && S.final) {
+        await NET.host('final-wager', { eligible: S.final.eligible });
+        if (S.screen === 'final-clue') NET.host('final-answer');
+      }
+    }
     render();
   },
   fullscreen() { const d = document.documentElement; try { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } catch (e) { toast('Full screen is not available here'); } },
@@ -954,7 +1044,7 @@ function move(dir) {
     const score = main + cross * 2.5;
     if (score < bestScore) { bestScore = score; best = el; }
   }
-  if (best) best.focus({ preventScroll: true });
+  if (best) { best.focus({ preventScroll: true }); best.scrollIntoView({ block: 'nearest' }); }
 }
 
 const KEY_DIRS = {
@@ -1020,13 +1110,14 @@ requestAnimationFrame(pollPads);
   Sounds.probe('');
   $('#stage').innerHTML = '<div class="screen"><p class="sub">Loading…</p></div>';
   await NET.init();
-  try {
-    const r = await fetch('games/index.json', { cache: 'no-cache' });
-    GAMES = await r.json();
-  } catch (e) {
-    GAMES = [];
-    toast('Could not load games/index.json. Open this page from a web server, not as a file.', 6000);
+  if (NET.on) {
+    try {
+      const r = await fetch('api/snapshot?key=' + encodeURIComponent(NET.key), { cache: 'no-store' });
+      const d = await r.json();
+      if (d.snapshot && d.snapshot.gameId === d.gameId) SERVER_SNAP = d.snapshot;
+    } catch (e) {}
   }
+  await refreshGames();
   render();
 })();
 </script>

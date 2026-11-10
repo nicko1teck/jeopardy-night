@@ -1,0 +1,103 @@
+{
+  "subject": "Green Ember",
+  "edition": "Book 1",
+  "rounds": [
+    {
+      "categories": [
+        { "name": "The Longtreaders", "clues": [
+          { "q": "Picket's big sister.", "a": "Who is Heather?" },
+          { "q": "Heather's younger brother, who dreams of becoming a warrior.", "a": "Who is Picket?" },
+          { "q": "Heather and Picket's baby brother, captured by the wolves with their parents.", "a": "Who is Jacks?" },
+          { "q": "Their warrior uncle, who drives off the wolves at Seven Mounds.", "a": "Who is Uncle Wilfred?" },
+          { "q": "At the end of the book, Heather joins this guild so she can tell their story.", "a": "What is the storyguild?" }
+        ]},
+        { "name": "Who Am I?", "kids": true, "clues": [
+          { "q": "I'm a white rabbit who guards Heather and Picket on the journey, and I have a royal secret.", "a": "Who is Smalls?" },
+          { "q": "I'm a wolf captain with one red eye.", "a": "Who is Redeye?" },
+          { "q": "I'm a cheerful young healer at Cloud Mountain, and I bring Picket carved crutches.", "a": "Who is Emma?" },
+          { "q": "I'm a gloomy black rabbit warrior, and Picket becomes my apprentice.", "a": "Who is Helmer?" },
+          { "q": "I'm a charming rabbit who loves telling tall tales, but can I be trusted?", "a": "Who is Kyle?" }
+        ]},
+        { "name": "Places", "clues": [
+          { "q": "The hidden rabbit stronghold the group is trying to reach.", "a": "What is Cloud Mountain?" },
+          { "q": "The peaceful village where the Longtreaders lived.", "a": "What is Nick Hollow?" },
+          { "q": "Father told the children never to go past the old maple into this wood.", "a": "What is the East Wood?" },
+          { "q": "After escaping the caves, the group travels down this river.", "a": "What is the Whitmer River?" },
+          { "q": "Along the river, the group finds this riverside town burned by wolves.", "a": "What is Decker's Landing?" }
+        ]},
+        { "name": "Villains", "clues": [
+          { "q": "Redeye and his soldiers are these animals.", "a": "What are wolves?" },
+          { "q": "Morbin Blackhawk is the leader of the Lords of this.", "a": "What is Prey?" },
+          { "q": "The main villain, who will stop at nothing to get the Green Ember.", "a": "Who is Morbin Blackhawk?" },
+          { "q": "Redeye's full name.", "a": "Who is Redeye Garlackson?" },
+          { "q": "The captain from Halfwind Citadel who openly distrusts the Longtreaders.", "a": "Who is Captain Frye?" }
+        ]},
+        { "name": "Cloud Mountain", "clues": [
+          { "q": "The diplomatic lord who leads Cloud Mountain.", "a": "Who is Lord Rake?" },
+          { "q": "The doctor with a thick accent who prescribes \"much Maggie, and hold the Helmer.\"", "a": "Who is Doctor Zeiger?" },
+          { "q": "The chef who cooks Cloud Mountain's meals.", "a": "Who is Gort?" },
+          { "q": "The secret cave entrance to Cloud Mountain, opened with a code phrase.", "a": "What is the Savory Den?", "dd": true },
+          { "q": "The eight-sided building with colored glass that newcomers aren't allowed to enter.", "a": "What is the Lighthall?" }
+        ]},
+        { "name": "The Story Begins", "clues": [
+          { "q": "Heather and Picket are sent out to pick these just before their home is attacked.", "a": "What are berries?" },
+          { "q": "When Heather and Picket get back from picking berries, they find their home doing this.", "a": "What is burning?" },
+          { "q": "The old rabbit dressed in black who comes to warn their parents.", "a": "Who is Lady Glen?" },
+          { "q": "At Seven Mounds, the siblings escape through a system of these.", "a": "What are caves?" },
+          { "q": "Uncle Wilfred floods the cavern by smashing this into the wall.", "a": "What is an anchor?" }
+        ]}
+      ]
+    },
+    {
+      "categories": [
+        { "name": "The Green Ember", "clues": [
+          { "q": "The Green Ember is this kind of precious green gem.", "a": "What is an emerald?" },
+          { "q": "The Green Ember is the sign of the prince's right to do this.", "a": "What is rule (be king)?" },
+          { "q": "Smalls's full royal name.", "a": "Who is Prince Jupiter Smalls?" },
+          { "q": "Finish the oath: \"My place beside you, my blood for yours, till the Green Ember rises, or\" this.", "a": "What is \"the end of the world\"?", "dd": true },
+          { "q": "At Jupiter's Crossing, this traitor grabs the Green Ember.", "a": "Who is Garten Longtreader?" }
+        ]},
+        { "name": "Helmer's Training", "clues": [
+          { "q": "Helmer is called Helmer the this.", "a": "What is Black?" },
+          { "q": "Picket asks to become Helmer's student, also called this.", "a": "What is an apprentice?" },
+          { "q": "Helmer hangs his training course of wooden birds and wolf dummies from this kind of tree.", "a": "What is a maple?" },
+          { "q": "Helmer is a disgraced one of these, a warrior of high rank.", "a": "What is a knight?" },
+          { "q": "During Helmer's gauntlet, Smalls knocks down the wolf dummies with these.", "a": "What are arrows?" }
+        ]},
+        { "name": "Kings and Legends", "clues": [
+          { "q": "The wise king who ruled during the golden age.", "a": "Who is King Jupiter the Great?" },
+          { "q": "The forest kingdom destroyed after King Jupiter fell.", "a": "What is the Great Wood?" },
+          { "q": "Cloud Mountain has statues of King Whitson Mariner and this warrior.", "a": "Who is Blackstar?", "dd": true },
+          { "q": "Paintings at Cloud Mountain are signed \"F. S.\" by this famous painter.", "a": "Who is Finbar Smalls?" },
+          { "q": "The hidden land Kyle tells tales about.", "a": "What is Terralain?" }
+        ]},
+        { "name": "Picket and Heather", "kids": true, "clues": [
+          { "q": "Picket is scared of being up high. He's afraid of these.", "a": "What are heights?" },
+          { "q": "While running away, Picket trips and breaks this part of his body.", "a": "What is his foot?" },
+          { "q": "Heather escapes the wolves by leaping between these.", "a": "What are trees?" },
+          { "q": "Heather loves hearing and telling these.", "a": "What are stories?" },
+          { "q": "At the end, Picket uses this weapon against Redeye.", "a": "What is a sword?" }
+        ]},
+        { "name": "Life on the Mountain", "clues": [
+          { "q": "Emma is training to be one of these.", "a": "What is a doctor (a healer)?" },
+          { "q": "Newcomers must live by the law of these, which keeps some secrets from them.", "a": "What are initiates?" },
+          { "q": "The explosive powder kept in barrels for the mountain's defense.", "a": "What is blastpowder?" },
+          { "q": "The ceremony that binds an apprentice to a master.", "a": "What is a calling ceremony?" },
+          { "q": "Maggie, the wise counselor, goes by this last name.", "a": "What is Weaver?" }
+        ]},
+        { "name": "The Rescue", "clues": [
+          { "q": "The author of The Green Ember.", "a": "Who is S.D. Smith?" },
+          { "q": "Picket uses an eagle as a springboard to kick one of these birds out of the sky.", "a": "What is a hawk?" },
+          { "q": "Kyle tricks Smalls into going to this place, where he is captured.", "a": "What is Jupiter's Crossing?" },
+          { "q": "The rescue begins when this instrument sounds.", "a": "What is a horn?" },
+          { "q": "At the end, the prince publicly gives this family the credit for saving him.", "a": "Who are the Longtreaders?" }
+        ]}
+      ]
+    }
+  ],
+  "final": {
+    "category": "Lord Rake",
+    "clue": "Lord Rake's crest shows two diamonds. One is green; the other is this color.",
+    "answer": "What is red?"
+  }
+}

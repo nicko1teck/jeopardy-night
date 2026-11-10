@@ -1,0 +1,103 @@
+{
+  "subject": "Middle-earth",
+  "edition": "Game 1",
+  "rounds": [
+    {
+      "categories": [
+        { "name": "Hobbits", "clues": [
+          { "q": "Bilbo's young relative and heir, who carries the Ring to Mordor.", "a": "Who is Frodo Baggins?" },
+          { "q": "Frodo's gardener and most loyal friend.", "a": "Who is Samwise (Sam) Gamgee?" },
+          { "q": "Merry is short for this name.", "a": "What is Meriadoc?" },
+          { "q": "Pippin's family name, which was also the family name of Bilbo's mother.", "a": "What is Took?" },
+          { "q": "The hobbit Sam marries when he gets home to the Shire.", "a": "Who is Rosie Cotton?" }
+        ]},
+        { "name": "The Hobbit", "clues": [
+          { "q": "The dragon who sleeps on the treasure inside the Lonely Mountain.", "a": "Who is Smaug?" },
+          { "q": "Bilbo wins the Ring from this creature in a game of riddles.", "a": "Who is Gollum?" },
+          { "q": "The proud leader of the thirteen dwarves.", "a": "Who is Thorin Oakenshield?" },
+          { "q": "The man of Lake-town who shoots Smaug with the Black Arrow.", "a": "Who is Bard (the Bowman)?" },
+          { "q": "The skin-changer who can turn into a huge black bear.", "a": "Who is Beorn?" }
+        ]},
+        { "name": "Who Am I?", "kids": true, "clues": [
+          { "q": "I'm a wizard in a grey cloak and a tall pointed hat, and I love fireworks.", "a": "Who is Gandalf?" },
+          { "q": "I'm an elf with a bow, and I have an orc-counting contest with a dwarf.", "a": "Who is Legolas?" },
+          { "q": "I'm a dwarf with an axe, and I become best friends with an elf.", "a": "Who is Gimli?" },
+          { "q": "People call me Strider, but I'm really the heir to the throne of Gondor.", "a": "Who is Aragorn?" },
+          { "q": "I'm the son of Gondor's Steward, and I try to take the Ring from Frodo.", "a": "Who is Boromir?" }
+        ]},
+        { "name": "Places", "clues": [
+          { "q": "The green, peaceful land where the hobbits live.", "a": "What is the Shire?" },
+          { "q": "The hidden valley where Elrond lives.", "a": "What is Rivendell?" },
+          { "q": "The volcano where the Ring was made, and the only place it can be destroyed.", "a": "What is Mount Doom (Orodruin)?" },
+          { "q": "The great white city of Gondor, built in seven levels.", "a": "What is Minas Tirith?" },
+          { "q": "The ancient dwarf kingdom under the mountains where Gandalf falls with the Balrog.", "a": "What is Moria (Khazad-dûm)?" }
+        ]},
+        { "name": "Weapons and Treasures", "clues": [
+          { "q": "Bilbo's little elvish blade, which glows blue when orcs are near.", "a": "What is Sting?" },
+          { "q": "Bilbo gives Frodo a shirt of rings made of this light, super-strong metal.", "a": "What is mithril?" },
+          { "q": "Aragorn's sword, reforged from the broken pieces of Narsil.", "a": "What is Andúril?" },
+          { "q": "The great white gem that Thorin wants more than all the rest of the treasure.", "a": "What is the Arkenstone?", "dd": true },
+          { "q": "Gandalf's sword, found in the trolls' cave in The Hobbit.", "a": "What is Glamdring?" }
+        ]},
+        { "name": "Villains", "clues": [
+          { "q": "The Dark Lord who made the One Ring.", "a": "Who is Sauron?" },
+          { "q": "The white wizard of Isengard who turns traitor.", "a": "Who is Saruman?" },
+          { "q": "The nine Ringwraiths, or Black Riders, are also called this.", "a": "What are the Nazgûl?" },
+          { "q": "The giant spider who lurks in the pass of Cirith Ungol.", "a": "Who is Shelob?" },
+          { "q": "Saruman's servant, who whispers poison into King Théoden's ear.", "a": "Who is Gríma Wormtongue?" }
+        ]}
+      ]
+    },
+    {
+      "categories": [
+        { "name": "Rohan and Gondor", "clues": [
+          { "q": "The King of Rohan, freed from Saruman's spell by Gandalf.", "a": "Who is Théoden?" },
+          { "q": "Théoden's niece, who rides to battle in disguise.", "a": "Who is Éowyn?" },
+          { "q": "The fortress of Rohan where Saruman's army attacks at night.", "a": "What is Helm's Deep (the Hornburg)?" },
+          { "q": "The lord of all horses, who carries Gandalf.", "a": "Who is Shadowfax?" },
+          { "q": "The Steward of Gondor and father of Boromir and Faramir.", "a": "Who is Denethor?" }
+        ]},
+        { "name": "Ents and Forests", "clues": [
+          { "q": "The giant tree-shepherds of Fangorn Forest.", "a": "What are Ents?" },
+          { "q": "The oldest of the Ents, who carries Merry and Pippin.", "a": "Who is Treebeard?" },
+          { "q": "The Ents attack and flood this stronghold of Saruman.", "a": "What is Isengard?" },
+          { "q": "The cheerful master of the Old Forest who saves the hobbits from Old Man Willow.", "a": "Who is Tom Bombadil?", "dd": true },
+          { "q": "In The Hobbit, the Wood-elves of this dark forest lock the dwarves up.", "a": "What is Mirkwood?" }
+        ]},
+        { "name": "Elves", "clues": [
+          { "q": "The Lady of Lothlórien.", "a": "Who is Galadriel?" },
+          { "q": "Arwen's father, the Lord of Rivendell.", "a": "Who is Elrond?" },
+          { "q": "Galadriel gives Frodo a glass phial holding the light of this star.", "a": "What is Eärendil?" },
+          { "q": "The elvish waybread that keeps a traveler going all day.", "a": "What is lembas?" },
+          { "q": "Galadriel gives Sam a box of earth and a silver seed of this kind of tree.", "a": "What is a mallorn?" }
+        ]},
+        { "name": "Hobbit Life", "kids": true, "clues": [
+          { "q": "Hobbits don't wear shoes, because these are tough and hairy.", "a": "What are their feet?" },
+          { "q": "Bilbo's comfortable home in Hobbiton.", "a": "What is Bag End?" },
+          { "q": "On their birthdays, hobbits don't get presents. Instead they do this.", "a": "What is give presents to others?" },
+          { "q": "Bilbo's big birthday party is for turning this age, which he calls eleventy-one.", "a": "What is 111?" },
+          { "q": "The tavern in Bree where the hobbits first meet Strider.", "a": "What is the Prancing Pony?" }
+        ]},
+        { "name": "The One Ring", "clues": [
+          { "q": "Putting the Ring on makes you this.", "a": "What is invisible?" },
+          { "q": "Fiery letters appear on the Ring when Gandalf throws it into this.", "a": "What is the fire (fireplace)?" },
+          { "q": "The rhyme says Seven rings were given to the lords of this people.", "a": "Who are the Dwarves?" },
+          { "q": "Gollum's name before the Ring changed him.", "a": "What is Sméagol?" },
+          { "q": "The Ring's inscription is written in this language of Mordor.", "a": "What is the Black Speech?" }
+        ]},
+        { "name": "Tolkien", "clues": [
+          { "q": "The author of The Hobbit and The Lord of the Rings.", "a": "Who is J.R.R. Tolkien?" },
+          { "q": "Tolkien was a professor at this famous English university.", "a": "What is Oxford?" },
+          { "q": "Tolkien and C.S. Lewis were members of this writers' club that read their stories aloud to each other.", "a": "Who are the Inklings?", "dd": true },
+          { "q": "Tolkien invented elvish languages. One is Quenya; the other main one is this.", "a": "What is Sindarin?" },
+          { "q": "The Inklings often met at this Oxford pub, nicknamed the Bird and Baby.", "a": "What is the Eagle and Child?" }
+        ]}
+      ]
+    }
+  ],
+  "final": {
+    "category": "The Return of the King",
+    "clue": "It was said no man could kill the Witch-king. He is struck down by Éowyn and this hobbit, who stabs him from behind.",
+    "answer": "Who is Merry (Meriadoc Brandybuck)?"
+  }
+}

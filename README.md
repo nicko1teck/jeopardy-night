@@ -73,12 +73,53 @@ are off then: teams answer out loud and you judge.
 
 ## Adding a game
 
-1. Copy `public/games/game1.json` to a new file, such as `lotr1.json`, and change the
-   questions. `"dd": true` marks a Daily Double; `"kids": true` marks a youngest-players category.
-2. Add a line to `public/games/index.json`:
-   `{ "id": "lotr1", "title": "Lord of the Rings Jeopardy · Game 1", "file": "lotr1.json" }`
+Drop one `.json` file into `public/games/` and it appears on the TV's home screen. Nothing
+else to edit, and no restart. (On the server, that means push, then the server pulls it.)
 
-No code changes needed.
+The smallest board needs only a `subject`, the `rounds`, and a `final`. Start from
+`public/games/_template.json` (files starting with `_` are never listed):
+
+```json
+{
+  "subject": "Mission Impossible",
+  "edition": "Game 1",
+  "rounds": [
+    { "categories": [ { "name": "Gadgets", "clues": [ { "q": "Clue", "a": "What is …?" } ] } ] }
+  ],
+  "final": { "category": "…", "clue": "…", "answer": "…" }
+}
+```
+
+- **`subject`** sets the title everywhere: "Mission Impossible" shows as
+  **Mission Impossible Jeopardy** on the TV, phones and host cards. Use `"title"` instead
+  to spell the whole title yourself.
+- **`edition`** (optional) tells boards on the same subject apart, e.g. "Game 2".
+- **Clues**: `q` is the clue, `a` the response. `"dd": true` makes it a Daily Double.
+- **Categories**: `"kids": true` makes it a youngest-players category. Every category in a
+  round needs the same number of clues. Up to 8 categories per round.
+- **Values** default to 200–1000 in round 1 and 400–2000 in round 2. Set `"values"` on a
+  round to change them, and `"name"` to rename it.
+- **House rules** apply automatically: the two lowest values in each round are "youngest
+  answers alone". Change that per round with `"restricted": [ ... ]` (an empty list turns it
+  off), or change the wording for a board with `"rules"`.
+
+If a file has a mistake, the TV home screen says which file and what's wrong, and skips it.
+
+`public/games/index.json` is only used when the board runs without the server (plain static
+hosting). With the server, ignore it.
+
+## Saved games and crashes
+
+The server saves the game to `~/.jeopardy-night/room.json` (outside the app folder) as it
+changes, and the TV sends it a copy of the board too. So:
+
+- **Server restart, crash or redeploy:** the game carries on. Phones reconnect by themselves
+  with the same room code; nobody rejoins.
+- **TV crash or reload:** open the TV link and press **Resume**. It works even from a
+  different browser, because the server has a copy.
+- **End game** in the host panel clears the saved copy.
+
+Set `DATA_DIR` to save somewhere else.
 
 ## Sounds
 
@@ -116,5 +157,5 @@ public/buzz.html     phone buzzer
 public/host.html     host cards: your private answer view
 public/sounds.js     sound effects shared by both
 public/sounds/       optional custom sound clips
-public/games/        question files and the game list
+public/games/        question files, one per game (plus _template.json)
 ```
