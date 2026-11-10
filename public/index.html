@@ -102,7 +102,17 @@
   .openb { font-size: 2.6vw; font-weight: 700; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 1vh; }
   .track { width: 40vw; height: 1.4vh; background: #0007; border-radius: 99px; overflow: hidden; }
   .track i { display: block; height: 100%; width: 100%; background: var(--right); }
-  .openb .track i { animation: drain 20s linear forwards; }
+  /* Countdown: a bar that drains plus the seconds left. Driven by a JS ticker, so it works in every browser. */
+  .cd { display: flex; align-items: center; gap: 1.2vw; }
+  .cd .track i { transition: width .2s linear; }
+  .cd.answer .track i { background: var(--gold); }
+  .cd .secs { font-size: 2.6vw; font-weight: 700; min-width: 4vw; text-align: left; }
+  .cd.answer .secs { color: var(--gold); }
+  .fixrow { display: flex; flex-wrap: wrap; gap: 1vw; justify-content: center; align-items: center; }
+  .fixrow .lbl { font-size: 1.5vw; color: #ffffffb3; text-transform: uppercase; }
+  .judge.fix .btn { opacity: .35; min-width: 4.5vw; }
+  .judge.fix .btn.on { opacity: 1; box-shadow: 0 0 0 .35vmin #fff; }
+  .judge.fix .btn.none { background: #ffffff22; border-color: #ffffff55; }
   @keyframes drain { from { width: 100%; } to { width: 0; } }
   @keyframes pop { from { transform: scale(.4); opacity: 0; } }
 
@@ -177,6 +187,8 @@ const money = (n) => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-U
 const STORE = 'nj-tv-game';
 const DEFAULT_BUZZ_SECONDS = 20; // how long buzzers stay open with nobody buzzing; change it mid-game in the host panel
 const buzzSeconds = () => (S && S.buzzSecs) || DEFAULT_BUZZ_SECONDS;
+const DEFAULT_ANSWER_SECONDS = 25; // how long a team has to answer once they buzz in; also in the host panel
+const answerSeconds = () => (S && S.answerSecs) || DEFAULT_ANSWER_SECONDS;
 const FINAL_SECONDS = 30;
 
 let GAMES = [];   // every board in public/games (the server lists them; index.json is the fallback without a server)
@@ -250,18 +262,54 @@ const NET = {
 
 function phase() { return NET.on && NET.state ? NET.state.phase : null; }
 
-let openTimer = null;
+// ---------- countdowns ----------
+// One countdown at a time: "buzz" (buzzers open, waiting for someone to buzz) or
+// "answer" (a team has buzzed, or a Daily Double is showing, and they're answering).
+let cd = null;       // { kind, start, dur }
+let cdTimer = null;
+function startCountdown(kind, seconds, onEnd) {
+  clearTimeout(cdTimer);
+  cd = { kind, start: Date.now(), dur: seconds * 1000 };
+  cdTimer = setTimeout(() => { cd = null; onEnd(); }, seconds * 1000);
+}
+function stopCountdown() { clearTimeout(cdTimer); cd = null; }
+function cdLeft() { return cd ? Math.max(0, cd.start + cd.dur - Date.now()) : 0; }
+function cdHtml() {
+  if (!cd) return '';
+  const left = cdLeft();
+  return `<div class="cd ${cd.kind}"><div class="track"><i id="cdfill" style="width:${(left / cd.dur) * 100}%"></i></div><span class="secs" id="cdtext">${Math.ceil(left / 1000)}</span></div>`;
+}
+// The ticker just updates the bar and the number already on screen.
+setInterval(() => {
+  if (!cd) return;
+  const left = cdLeft();
+  const fill = document.getElementById('cdfill'), txt = document.getElementById('cdtext');
+  if (fill) fill.style.width = (left / cd.dur) * 100 + '%';
+  if (txt) txt.textContent = Math.ceil(left / 1000);
+}, 200);
+
 function startBuzzTimer() {
-  S.openAt = Date.now();
-  clearTimeout(openTimer);
-  openTimer = setTimeout(() => {
+  startCountdown('buzz', buzzSeconds(), () => {
     if (phase() === 'open' && S.screen === 'clue' && S.cur && !S.cur.done) {
       Sounds.play('times-up');
       S.cur.timeUp = true;
       NET.host('idle');
-      render();
     }
-  }, buzzSeconds() * 1000);
+    render();
+  });
+}
+
+// Starts when a team buzzes in (or a Daily Double clue appears). Running out only
+// sounds the buzzer and shows "Time's up!": the host still judges.
+function startAnswerTimer() {
+  if (S.cur) S.cur.answerUp = false;
+  startCountdown('answer', answerSeconds(), () => {
+    if (S.screen === 'clue' && S.cur && !S.cur.done && (S.cur.dd || phase() === 'buzzed')) {
+      Sounds.play('times-up');
+      S.cur.answerUp = true;
+    }
+    render();
+  });
 }
 
 function onNet(prev, s) {
@@ -276,11 +324,12 @@ function onNet(prev, s) {
     if (s.teams.length > (prev.teams || []).length) Sounds.play('team-joined');
     return;
   }
-  if (s.phase === 'open' && prev.phase !== 'open') startBuzzTimer();
-  if (s.phase === 'buzzed' && prev.phase !== 'buzzed') {
-    clearTimeout(openTimer);
-    if (S.screen === 'clue') Sounds.play('buzz-in');
+  if (s.phase === 'open' && prev.phase !== 'open' && S.screen === 'clue') startBuzzTimer();
+  if (s.phase === 'buzzed' && prev.phase !== 'buzzed' && S.screen === 'clue') {
+    Sounds.play('buzz-in');
+    startAnswerTimer();
   }
+  if (['idle', 'reading'].includes(s.phase) && prev.phase !== s.phase && !(S.cur && S.cur.dd)) stopCountdown();
   if (S.screen === 'dd-wager' && s.dd && s.dd.wager != null && !S.cur.manual && S.cur.wager !== s.dd.wager) {
     S.cur.wager = s.dd.wager;
     Sounds.play('pick');
@@ -301,12 +350,8 @@ function curInfo() {
 function roundDone() { return round().categories.every((c, ci) => c.clues.every((_, i) => S.used[ci + '-' + i])); }
 function teamNames() { return NET.on ? NET.state.teams : (S.lobbyTeams || []); }
 
-// The house rules apply to every board unless a board brings its own "rules" and "restricted" values.
-const HOUSE_RULES = {
-  restricted: 'Youngest teammate answers alone. No help!',
-  kids: 'Youngest player on each team only',
-  confer: 'Teams may confer, but the youngest says the answer',
-};
+// The message shown on youngest-players categories ("kids": true). A board can change it with "rules": { "kids": "..." }.
+const HOUSE_RULES = { kids: 'Youngest player on each team only' };
 const ROUND_NAMES = ['Jeopardy!', 'Double Jeopardy!', 'Triple Jeopardy!'];
 
 // Fill in everything a board is allowed to leave out, so a minimal file plays like a full one.
@@ -321,7 +366,6 @@ function normalizeGame(g, file) {
     if (!Array.isArray(r.values) || r.values.length !== rows) {
       r.values = Array.from({ length: rows }, (_, i) => 200 * (ri + 1) * (i + 1));
     }
-    if (!Array.isArray(r.restricted)) r.restricted = r.values.slice(0, 2); // the two lowest values, by default
   });
   return g;
 }
@@ -402,6 +446,7 @@ function ddShowClue() {
   S.screen = 'clue';
   NET.host('idle');
   Sounds.play('reveal');
+  startAnswerTimer();
   render();
 }
 
@@ -410,15 +455,28 @@ function openBuzzers() {
   NET.host('open', { lockedOut: S.cur.tried.map((x, i) => (x ? i : -1)).filter((i) => i >= 0) });
 }
 
+// What a team got for the current clue: 1 right, -1 wrong, 0 nothing. Changing it
+// moves the score by the difference, so the host can overrule any call at any time.
+function clueValue() { return S.cur.dd ? S.cur.wager : curInfo().value; }
+function resultOf(t) { return (S.cur.results || {})[t] || 0; }
+function setResult(t, r) {
+  const c = S.cur;
+  c.results = c.results || {};
+  const old = resultOf(t);
+  if (old === r) return;
+  S.teams[t].score += (r - old) * clueValue();
+  if (r) c.results[t] = r; else delete c.results[t];
+  if (r === 1) { c.right = t; S.control = t; } else if (c.right === t) c.right = null;
+}
+
 function judge(t, right) {
   const c = S.cur;
   if (c.done || c.tried[t]) return;
-  const v = c.dd ? c.wager : curInfo().value;
-  S.teams[t].score += right ? v : -v;
+  setResult(t, right ? 1 : -1);
   c.tried[t] = true;
+  stopCountdown();
   Sounds.play(right ? 'right' : 'wrong');
   const eligible = c.dd ? [c.team] : S.teams.map((_, i) => i);
-  if (right) { c.right = t; S.control = t; }
   if (right || eligible.every((i) => c.tried[i])) {
     c.done = true;
     NET.host('idle');
@@ -432,11 +490,22 @@ function judge(t, right) {
 
 function showAnswer() {
   S.cur.done = true;
+  stopCountdown();
   NET.host('idle');
   render();
 }
 
+// A team buzzed too early: reopen the buzzers, no score change, and they can buzz again.
+function undoBuzz() {
+  if (phase() !== 'buzzed') return;
+  stopCountdown();
+  Sounds.play('pick');
+  openBuzzers();
+}
+
 function backToBoard() {
+  stopCountdown();
+  if (S.cur) S.lastClue = S.cur; // so the host can still fix its scoring from the board
   S.cur = null;
   if (roundDone()) { S.screen = 'round-end'; Sounds.play('round-end'); }
   else S.screen = 'board';
@@ -446,7 +515,7 @@ function backToBoard() {
 
 function nextRound() {
   if (S.round < GAME.rounds.length - 1) {
-    S.round++; S.used = {}; S.cur = null; S.fill = true; S.revealed = []; S.screen = 'board';
+    S.round++; S.used = {}; S.cur = null; S.lastClue = null; S.fill = true; S.revealed = []; S.screen = 'board';
     NET.host('idle');
     Sounds.play('board-fill');
     render();
@@ -455,7 +524,7 @@ function nextRound() {
 
 function enterFinal() {
   const eligible = S.teams.map((t, i) => (t.score > 0 ? i : -1)).filter((i) => i >= 0);
-  S.cur = null;
+  S.cur = null; S.lastClue = null;
   S.final = { eligible, rows: {}, clock: 'idle', showAnswer: false };
   eligible.forEach((t) => { S.final.rows[t] = { shown: false, wager: null, result: null }; });
   S.screen = 'final-cat';
@@ -498,6 +567,15 @@ function revealFinal(t) {
   const sub = phoneSub(t);
   if (row.wager == null) row.wager = sub && sub.wagerIn ? sub.wager : 0;
   Sounds.play('reveal');
+  render();
+}
+
+function undoFinal(t) {
+  const row = S.final.rows[t];
+  if (row.result == null) return;
+  S.teams[t].score -= row.result ? row.wager : -row.wager;
+  row.result = null;
+  NET.host('scores');
   render();
 }
 
@@ -641,11 +719,12 @@ V['dd-wager'] = () => {
   </div>`;
 };
 
+// The pill above the clue: Daily Double details, or the youngest-players rule
+// on that category's clues only. Every other clue shows no pill.
 function ruleFor(cat, value, c) {
   if (c.dd) return `Daily Double · ${S.teams[c.team].name} wagered ${money(c.wager)}`;
   if (cat.kids) return '★ ' + GAME.rules.kids;
-  if ((round().restricted || []).includes(value)) return GAME.rules.restricted;
-  return GAME.rules.confer;
+  return '';
 }
 
 V.clue = () => {
@@ -655,22 +734,33 @@ V.clue = () => {
   const eligible = c.dd ? [c.team] : S.teams.map((_, i) => i);
   const winner = p === 'buzzed' ? NET.state.winner : null;
 
+  const timesUp = `<div class="openb" style="color:#ffb0aa">Time's up!</div>`;
   let middle = '';
   if (c.done) {
     middle = `<p class="answer">${esc(clue.a)}</p>`;
   } else if (winner != null && S.teams[winner]) {
-    middle = `<div class="banner">${esc(S.teams[winner].name)}!</div>`;
+    middle = `<div class="openb"><div class="banner">${esc(S.teams[winner].name)}!</div>${c.answerUp ? timesUp : cdHtml()}</div>`;
+  } else if (c.dd) {
+    middle = c.answerUp ? timesUp : `<div class="openb">${cdHtml()}</div>`;
   } else if (p === 'open') {
-    const elapsed = Math.min(buzzSeconds() * 1000, Date.now() - (S.openAt || Date.now()));
-    middle = `<div class="openb">Buzzers open!<div class="track"><i style="animation-duration:${buzzSeconds()}s;animation-delay:-${elapsed}ms"></i></div></div>`;
+    middle = `<div class="openb">Buzzers open!${cdHtml()}</div>`;
   } else if (c.timeUp) {
     middle = `<div class="openb" style="color:#ffb0aa">Time's up! No one buzzed.</div>`;
   }
 
   let controls = '';
   if (c.done) {
-    controls = `<button class="btn gold" data-act="back" data-focus>Back to the board</button>`;
+    // Overrule: set any team's result for this clue; the score follows.
+    controls = `<div class="fixrow"><span class="lbl">Scoring</span>${S.teams.map((t, i) => {
+      const r = resultOf(i);
+      return `<div class="judge fix"><span class="tn">${esc(t.name)}</span>
+        <button class="btn right ${r === 1 ? 'on' : ''}" data-act="setres" data-t="${i}" data-r="1">✓</button>
+        <button class="btn wrong ${r === -1 ? 'on' : ''}" data-act="setres" data-t="${i}" data-r="-1">✗</button>
+        <button class="btn none ${r === 0 ? 'on' : ''}" data-act="setres" data-t="${i}" data-r="0">–</button></div>`;
+    }).join('')}</div>
+    <button class="btn gold" data-act="back" data-focus>Back to the board</button>`;
   } else {
+    if (winner != null) controls += `<button class="btn" data-act="undobuzz">Undo buzz</button>`;
     if (NET.on && !c.dd && c.timeUp && (p === 'reading' || p === 'idle')) {
       controls += `<button class="btn gold" data-act="open" data-focus>Open buzzers again</button>`;
     }
@@ -769,7 +859,8 @@ V['final-judge'] = () => {
           <button class="btn right small" data-act="fjudge" data-t="${t}" data-r="1" ${focusHere ? 'data-focus' : ''}>✓</button>
           <button class="btn wrong small" data-act="fjudge" data-t="${t}" data-r="0">✗</button></div>`;
       } else {
-        right = `<span class="res" style="color:${row.result ? '#9ff0b4' : '#ffb0aa'}">${row.result ? '+' : '−'}${money(row.wager)}</span>`;
+        right = `<span class="res" style="color:${row.result ? '#9ff0b4' : '#ffb0aa'}">${row.result ? '+' : '−'}${money(row.wager)}</span>
+          <button class="btn small" data-act="fundo" data-t="${t}">Undo</button>`;
       }
     }
     return `<div class="frow"><div class="tn">${esc(S.teams[t].name)}<small>${money(S.teams[t].score)}</small></div><div>${mid}</div><div>${right}</div></div>`;
@@ -805,11 +896,15 @@ function hostPanel() {
     <div class="adj"><span class="tn">Time to buzz</span><span class="sc">${buzzSeconds()} sec</span>
       <button class="btn small" data-act="buzzsecs" data-d="-5">−5</button>
       <button class="btn small" data-act="buzzsecs" data-d="5">+5</button></div>
+    <div class="adj"><span class="tn">Time to answer</span><span class="sc">${answerSeconds()} sec</span>
+      <button class="btn small" data-act="answersecs" data-d="-5">−5</button>
+      <button class="btn small" data-act="answersecs" data-d="5">+5</button></div>
     ${inGame ? S.teams.map((t, i) => `<div class="adj"><span class="tn">${esc(t.name)}</span><span class="sc">${money(t.score)}</span>
         ${[-100, 100].map((d) => `<button class="btn small" data-act="adj" data-t="${i}" data-d="${d}">${d > 0 ? '+' : '−'}100</button>`).join('')}</div>`).join('') : ''}
     <div class="row">
       ${['clue', 'dd', 'dd-wager'].includes(S.screen) ? `<button class="btn small" data-act="forceback">Back to board</button>` : ''}
       ${S.screen === 'board' && !allCatsShown() ? `<button class="btn small" data-act="revealall">Reveal all categories</button>` : ''}
+      ${['board', 'round-end'].includes(S.screen) && S.lastClue ? `<button class="btn small" data-act="fixlast">Fix last clue's scoring</button>` : ''}
       ${['board', 'round-end'].includes(S.screen) ? `<button class="btn small" data-act="nextround">${S.round < GAME.rounds.length - 1 ? 'Skip to next round' : 'Skip to Final'}</button>` : ''}
       <button class="btn small" data-act="fullscreen">Full screen</button>
       ${S.screen !== 'home' ? `<button class="btn small wrong" data-act="home">End game</button>` : ''}
@@ -965,6 +1060,27 @@ const ACTIONS = {
   ddclue: ddShowClue,
   open: openBuzzers,
   judge: (d) => judge(Number(d.t), d.r === '1'),
+  setres(d) {
+    const r = Number(d.r);
+    setResult(Number(d.t), r);
+    Sounds.play(r === 1 ? 'right' : r === -1 ? 'wrong' : 'pick');
+    NET.host('scores');
+    render();
+  },
+  undobuzz: undoBuzz,
+  fixlast() {
+    if (!S.lastClue) return;
+    hostOpen = false;
+    S.cur = S.lastClue;
+    S.cur.done = true;
+    S.screen = 'clue';
+    render();
+  },
+  fundo: (d) => undoFinal(Number(d.t)),
+  answersecs(d) {
+    S.answerSecs = Math.max(5, Math.min(60, answerSeconds() + Number(d.d)));
+    render();
+  },
   answer: showAnswer,
   back: backToBoard,
   nextround() { hostOpen = false; nextRound(); },
