@@ -24,16 +24,16 @@
               "a": "What is a cab?"
             },
             {
-              "q": "Before she was a queen, Aravis was this kind of Calormene noblewoman.",
-              "a": "What is a Tarkheena?"
-            },
-            {
               "q": "Before he was king, Caspian was secretly taught the history of Old Narnia by this tutor.",
               "a": "Who is Doctor Cornelius?"
             },
             {
               "q": "Before he was king, Rilian spent ten years under the witch's spell as this.",
               "a": "What is the Black Knight?"
+            },
+            {
+              "q": "Before she was a queen, Aravis was this kind of Calormene noblewoman.",
+              "a": "What is a Tarkheena?"
             }
           ]
         },
@@ -42,20 +42,20 @@
           "kids": true,
           "clues": [
             {
-              "q": "The brave mouse with a sword who sails to the end of the world.",
-              "a": "Who is Reepicheep?"
-            },
-            {
-              "q": "The talking horse who carries Shasta.",
-              "a": "Who is Bree?"
-            },
-            {
               "q": "The faun Lucy meets at the lamppost.",
               "a": "Who is Mr Tumnus?"
             },
             {
               "q": "The couple who hide the children in their dam and give them dinner.",
               "a": "Who are Mr and Mrs Beaver?"
+            },
+            {
+              "q": "The brave mouse with a sword who sails to the end of the world.",
+              "a": "Who is Reepicheep?"
+            },
+            {
+              "q": "The talking horse who carries Shasta.",
+              "a": "Who is Bree?"
             },
             {
               "q": "The owl who takes Jill and Eustace to a midnight parliament.",
@@ -180,21 +180,21 @@
           "name": "The Silver Chair",
           "clues": [
             {
-              "q": "The gloomy Marsh-wiggle who guides Jill and Eustace.",
-              "a": "Who is Puddleglum?"
-            },
-            {
               "q": "The lost prince, son of Caspian.",
               "a": "Who is Rilian?"
             },
             {
-              "q": "The castle of the gentle giants, who aren't so gentle.",
-              "a": "What is Harfang?"
+              "q": "The underground kingdom ruled by the Lady of the Green Kirtle.",
+              "a": "What is Underland?"
             },
             {
-              "q": "The underground kingdom ruled by the Lady of the Green Kirtle.",
-              "a": "What is Underland?",
+              "q": "The castle of the gentle giants, who aren't so gentle.",
+              "a": "What is Harfang?",
               "dd": true
+            },
+            {
+              "q": "Aslan's first sign: as soon as Eustace arrives in Narnia, he must greet this old friend.",
+              "a": "Who is (King) Caspian?"
             },
             {
               "q": "The deeper land below Underland where the gnomes come from.",
@@ -206,16 +206,16 @@
           "name": "The Horse and His Boy",
           "clues": [
             {
+              "q": "The capital city of Calormen.",
+              "a": "What is Tashbaan?"
+            },
+            {
               "q": "Shasta's real name.",
               "a": "What is Cor?"
             },
             {
               "q": "The talking mare who carries Aravis.",
               "a": "Who is Hwin?"
-            },
-            {
-              "q": "The capital city of Calormen.",
-              "a": "What is Tashbaan?"
             },
             {
               "q": "The old Tarkaan Aravis is supposed to marry.",
@@ -231,20 +231,20 @@
           "name": "Who Said It?",
           "clues": [
             {
-              "q": "Told the children that Aslan isn't safe, but he is good.",
-              "a": "Who is Mr Beaver?"
-            },
-            {
-              "q": "Told the witch he'd go on living like a Narnian even if there were no Narnia.",
-              "a": "Who is Puddleglum?"
-            },
-            {
               "q": "At the Stone Table, claimed Edmund's life under the Deep Magic.",
               "a": "Who is the White Witch?"
             },
             {
               "q": "Told Lucy and Edmund that he is known by another name in their world.",
               "a": "Who is Aslan?"
+            },
+            {
+              "q": "Told the children that Aslan isn't safe, but he is good.",
+              "a": "Who is Mr Beaver?"
+            },
+            {
+              "q": "Told the witch he'd go on living like a Narnian even if there were no Narnia.",
+              "a": "Who is Puddleglum?"
             },
             {
               "q": "Wondered aloud what they teach children in schools these days, since nobody seems to learn logic.",
@@ -265,16 +265,16 @@
               "a": "What is the Stone Table?"
             },
             {
-              "q": "Aslan's father.",
-              "a": "Who is the Emperor-beyond-the-Sea?"
+              "q": "Aslan creates Narnia by doing this.",
+              "a": "What is singing?"
             },
             {
               "q": "At the end of the world in the Dawn Treader, Aslan first appears as this animal.",
               "a": "What is a lamb?"
             },
             {
-              "q": "Aslan creates Narnia by doing this.",
-              "a": "What is singing?"
+              "q": "Aslan's father.",
+              "a": "Who is the Emperor-beyond-the-Sea?"
             }
           ]
         },
@@ -286,16 +286,16 @@
               "a": "Who is Uncle Andrew?"
             },
             {
+              "q": "The Lady of the Green Kirtle turns into this.",
+              "a": "What is a serpent?"
+            },
+            {
               "q": "The magician who rules the Dufflepuds.",
               "a": "Who is Coriakin?"
             },
             {
               "q": "In Prince Caspian, Nikabrik brings a hag and one of these to the council.",
               "a": "What is a werewolf?"
-            },
-            {
-              "q": "The Lady of the Green Kirtle turns into this.",
-              "a": "What is a serpent?"
             },
             {
               "q": "Uncle Andrew's godmother, who left him a box of dust from Atlantis.",

@@ -4,100 +4,321 @@
   "rounds": [
     {
       "categories": [
-        { "name": "Father Christmas", "clues": [
-          { "q": "Peter's gifts are a sword and this, silver with a red lion on it.", "a": "What is a shield?" },
-          { "q": "Mrs Beaver's present, waiting for her at home: a new one of these.", "a": "What is a sewing machine?" },
-          { "q": "Father Christmas tells Susan and Lucy he doesn't mean for them to do this.", "a": "What is fight in the battle?" },
-          { "q": "Mr Beaver's present: when he gets home, his dam will be this.", "a": "What is finished and mended (no more leaks)?", "dd": true },
-          { "q": "Before he leaves, Father Christmas brings out a tray with cups, saucers, sugar, cream and one of these.", "a": "What is a teapot?" }
-        ]},
-        { "name": "What Kind of Creature?", "kids": true, "clues": [
-          { "q": "Mr Tumnus is this half-man, half-goat creature.", "a": "What is a faun?" },
-          { "q": "Glimfeather is this kind of bird.", "a": "What is an owl?" },
-          { "q": "Ginger, who plots with Shift, is this animal.", "a": "What is a cat?" },
-          { "q": "Glenstorm, who reads the stars, is this half-man, half-horse.", "a": "What is a centaur?" },
-          { "q": "The god Tash has the head of this kind of bird, with a cruel, curved beak.", "a": "What is a bird of prey (vulture)?" }
-        ]},
-        { "name": "Name the Book", "clues": [
-          { "q": "The book where Eustace turns into a dragon.", "a": "What is The Voyage of the Dawn Treader?" },
-          { "q": "The book where Jill and Eustace rescue Prince Rilian.", "a": "What is The Silver Chair?" },
-          { "q": "The book where Narnia is created.", "a": "What is The Magician's Nephew?" },
-          { "q": "The book where Narnia comes to an end.", "a": "What is The Last Battle?" },
-          { "q": "The only book where no children from our world arrive in Narnia.", "a": "What is The Horse and His Boy?" }
-        ]},
-        { "name": "The Dawn Treader Crew", "clues": [
-          { "q": "The captain of the Dawn Treader.", "a": "Who is Drinian?" },
-          { "q": "Eustace keeps a grumpy record of the voyage in one of these.", "a": "What is a diary?" },
-          { "q": "The lost lord rescued from the Dark Island.", "a": "Who is Lord Rhoop?" },
-          { "q": "The lost lord turned to gold in the Deathwater pool.", "a": "Who is Lord Restimar?" },
-          { "q": "Near the end, Lucy looks down through the clear water and sees a whole kingdom of these.", "a": "Who are the Sea People?" }
-        ]},
-        { "name": "Prince Caspian", "clues": [
-          { "q": "Caspian's horse.", "a": "Who is Destrier?" },
-          { "q": "Pattertwig, who joins Caspian's army, is this animal.", "a": "What is a squirrel?" },
-          { "q": "Doctor Cornelius is half human and half this.", "a": "What is a dwarf?" },
-          { "q": "These three bears insist it's their family's right to be marshals of the lists.", "a": "Who are the Three Bulgy Bears?" },
-          { "q": "The big-hearted giant who fights for Caspian.", "a": "Who is Wimbleweather?" }
-        ]},
-        { "name": "The Horse and His Boy", "clues": [
-          { "q": "The fisherman who raised Shasta.", "a": "Who is Arsheesh?" },
-          { "q": "The chatty, silly friend who helps Aravis hide in Tashbaan.", "a": "Who is Lasaraleen?" },
-          { "q": "Shasta spends a scary night alone at these, at the edge of the desert.", "a": "What are the Tombs of the Ancient Kings?" },
-          { "q": "The wise old man who shelters Aravis and the horses.", "a": "Who is the Hermit of the Southern March?" },
-          { "q": "Rabadash can only turn back into a man by standing in this place at the great Autumn Feast.", "a": "What is the temple of Tash (in Tashbaan)?" }
-        ]}
+        {
+          "name": "Father Christmas",
+          "clues": [
+            {
+              "q": "Peter's gifts are a sword and this, silver with a red lion on it.",
+              "a": "What is a shield?"
+            },
+            {
+              "q": "Mrs Beaver's present, waiting for her at home: a new one of these.",
+              "a": "What is a sewing machine?"
+            },
+            {
+              "q": "Father Christmas tells Susan and Lucy he doesn't mean for them to do this.",
+              "a": "What is fight in the battle?"
+            },
+            {
+              "q": "Mr Beaver's present: when he gets home, his dam will be this.",
+              "a": "What is finished and mended (no more leaks)?",
+              "dd": true
+            },
+            {
+              "q": "Before he leaves, Father Christmas brings out a tray with cups, saucers, sugar, cream and one of these.",
+              "a": "What is a teapot?"
+            }
+          ]
+        },
+        {
+          "name": "What Kind of Creature?",
+          "kids": true,
+          "clues": [
+            {
+              "q": "Mr Tumnus is this half-man, half-goat creature.",
+              "a": "What is a faun?"
+            },
+            {
+              "q": "Glimfeather is this kind of bird.",
+              "a": "What is an owl?"
+            },
+            {
+              "q": "Ginger, who plots with Shift, is this animal.",
+              "a": "What is a cat?"
+            },
+            {
+              "q": "Glenstorm, who reads the stars, is this half-man, half-horse.",
+              "a": "What is a centaur?"
+            },
+            {
+              "q": "The god Tash has the head of this kind of bird, with a cruel, curved beak.",
+              "a": "What is a bird of prey (vulture)?"
+            }
+          ]
+        },
+        {
+          "name": "Name the Book",
+          "clues": [
+            {
+              "q": "The book where Eustace turns into a dragon.",
+              "a": "What is The Voyage of the Dawn Treader?"
+            },
+            {
+              "q": "The book where Jill and Eustace rescue Prince Rilian.",
+              "a": "What is The Silver Chair?"
+            },
+            {
+              "q": "The book where Narnia is created.",
+              "a": "What is The Magician's Nephew?"
+            },
+            {
+              "q": "The book where Narnia comes to an end.",
+              "a": "What is The Last Battle?"
+            },
+            {
+              "q": "The only book where no children from our world arrive in Narnia.",
+              "a": "What is The Horse and His Boy?"
+            }
+          ]
+        },
+        {
+          "name": "The Dawn Treader Crew",
+          "clues": [
+            {
+              "q": "Eustace keeps a grumpy record of the voyage in one of these.",
+              "a": "What is a diary?"
+            },
+            {
+              "q": "The captain of the Dawn Treader.",
+              "a": "Who is Drinian?"
+            },
+            {
+              "q": "Near the end, Lucy looks down through the clear water and sees a whole kingdom of these.",
+              "a": "Who are the Sea People?"
+            },
+            {
+              "q": "The lost lord rescued from the Dark Island.",
+              "a": "Who is Lord Rhoop?"
+            },
+            {
+              "q": "The lost lord turned to gold in the Deathwater pool.",
+              "a": "Who is Lord Restimar?"
+            }
+          ]
+        },
+        {
+          "name": "Prince Caspian",
+          "clues": [
+            {
+              "q": "Doctor Cornelius is half human and half this.",
+              "a": "What is a dwarf?"
+            },
+            {
+              "q": "Pattertwig, who joins Caspian's army, is this animal.",
+              "a": "What is a squirrel?"
+            },
+            {
+              "q": "The big-hearted giant who fights for Caspian.",
+              "a": "Who is Wimbleweather?"
+            },
+            {
+              "q": "Caspian's horse.",
+              "a": "Who is Destrier?"
+            },
+            {
+              "q": "These three bears insist it's their family's right to be marshals of the lists.",
+              "a": "Who are the Three Bulgy Bears?"
+            }
+          ]
+        },
+        {
+          "name": "The Horse and His Boy",
+          "clues": [
+            {
+              "q": "The fisherman who raised Shasta.",
+              "a": "Who is Arsheesh?"
+            },
+            {
+              "q": "The chatty, silly friend who helps Aravis hide in Tashbaan.",
+              "a": "Who is Lasaraleen?"
+            },
+            {
+              "q": "Shasta spends a scary night alone at these, at the edge of the desert.",
+              "a": "What are the Tombs of the Ancient Kings?"
+            },
+            {
+              "q": "The wise old man who shelters Aravis and the horses.",
+              "a": "Who is the Hermit of the Southern March?"
+            },
+            {
+              "q": "Rabadash can only turn back into a man by standing in this place at the great Autumn Feast.",
+              "a": "What is the temple of Tash (in Tashbaan)?"
+            }
+          ]
+        }
       ]
     },
     {
       "categories": [
-        { "name": "The Magician's Nephew", "clues": [
-          { "q": "Polly's friend, who lives next door.", "a": "Who is Digory?" },
-          { "q": "The first joke in Narnia is made by this bird.", "a": "What is a jackdaw?" },
-          { "q": "The Talking Beasts think Uncle Andrew is a tree, so they do this to him.", "a": "What is plant him in the ground?" },
-          { "q": "The Witch eats one of the silver apples in this walled place.", "a": "What is the garden in the West?" },
-          { "q": "The tree that grows from Digory's apple core is later made into this.", "a": "What is the wardrobe?", "dd": true }
-        ]},
-        { "name": "The Last Battle", "clues": [
-          { "q": "Shift claims to be Aslan's this, speaking for him.", "a": "What is his mouthpiece?" },
-          { "q": "Before Jill and Eustace arrive, King Tirian is tied to one of these.", "a": "What is a tree?" },
-          { "q": "The Calormene captain who works with Shift.", "a": "Who is Rishda Tarkaan?" },
-          { "q": "Back in England, the friends of Narnia are in this kind of accident.", "a": "What is a railway (train) accident?" },
-          { "q": "The cry as everyone races deeper into Aslan's country.", "a": "What is \"Further up and further in\"?" }
-        ]},
-        { "name": "The Silver Chair", "clues": [
-          { "q": "The school Jill and Eustace go to.", "a": "What is Experiment House?" },
-          { "q": "Aslan gives Jill this many signs to remember.", "a": "What is four?" },
-          { "q": "Puddleglum stamps out the witch's fire with this.", "a": "What is his bare foot?" },
-          { "q": "The gnome who tells the children about the deep land of Bism.", "a": "Who is Golg?" },
-          { "q": "The owls' secret midnight meeting is called this.", "a": "What is a parliament (of owls)?" }
-        ]},
-        { "name": "Colors", "kids": true, "clues": [
-          { "q": "Aslan's mane is this color.", "a": "What is golden?" },
-          { "q": "The Lady of the this-colored Kirtle.", "a": "What is green?" },
-          { "q": "Prince Rilian is tied to a chair made of this.", "a": "What is silver?" },
-          { "q": "Uncle Andrew's rings that take you out of our world are this color.", "a": "What is yellow?" },
-          { "q": "The lion on Peter's shield is this color.", "a": "What is red?" }
-        ]},
-        { "name": "C.S. Lewis", "clues": [
-          { "q": "C.S. Lewis's nickname with his friends and family.", "a": "What is Jack?" },
-          { "q": "Lewis was born in this city in Ireland.", "a": "What is Belfast?" },
-          { "q": "Lewis's home in Oxford, called The this.", "a": "What are the Kilns?", "dd": true },
-          { "q": "Lewis taught at Oxford, then at this other famous university.", "a": "What is Cambridge?" },
-          { "q": "Lewis and his friend Tolkien belonged to this writers' club.", "a": "Who are the Inklings?" }
-        ]},
-        { "name": "Endings", "clues": [
-          { "q": "At the end of The Lion, the Witch and the Wardrobe, the kings and queens hunt this animal and find the lamp-post.", "a": "What is the White Stag?" },
-          { "q": "At the end of Prince Caspian, Aslan makes a doorway out of three pieces of this.", "a": "What is wood?" },
-          { "q": "At the end of The Silver Chair, Jill and Eustace scare off these at school.", "a": "Who are the bullies?" },
-          { "q": "At the end of The Last Battle, Aslan says the term is over and these have begun.", "a": "What are the holidays?" },
-          { "q": "Shasta and Aravis marry, and their son becomes this famous king of Archenland.", "a": "Who is Ram the Great?" }
-        ]}
+        {
+          "name": "The Magician's Nephew",
+          "clues": [
+            {
+              "q": "The Talking Beasts think Uncle Andrew is a tree, so they do this to him.",
+              "a": "What is plant him in the ground?"
+            },
+            {
+              "q": "The Witch eats one of the silver apples in this walled place.",
+              "a": "What is the garden in the West?"
+            },
+            {
+              "q": "The first joke in Narnia is made by this bird.",
+              "a": "What is a jackdaw?"
+            },
+            {
+              "q": "The tree that grows from Digory's apple core is later made into this.",
+              "a": "What is the wardrobe?",
+              "dd": true
+            },
+            {
+              "q": "Polly's last name.",
+              "a": "What is Plummer?"
+            }
+          ]
+        },
+        {
+          "name": "The Last Battle",
+          "clues": [
+            {
+              "q": "Before Jill and Eustace arrive, King Tirian is tied to one of these.",
+              "a": "What is a tree?"
+            },
+            {
+              "q": "Back in England, the friends of Narnia are in this kind of accident.",
+              "a": "What is a railway (train) accident?"
+            },
+            {
+              "q": "The cry as everyone races deeper into Aslan's country.",
+              "a": "What is \"Further up and further in\"?"
+            },
+            {
+              "q": "The Calormene captain who works with Shift.",
+              "a": "Who is Rishda Tarkaan?"
+            },
+            {
+              "q": "Shift claims to be Aslan's this, speaking for him.",
+              "a": "What is his mouthpiece?"
+            }
+          ]
+        },
+        {
+          "name": "The Silver Chair",
+          "clues": [
+            {
+              "q": "The school Jill and Eustace go to.",
+              "a": "What is Experiment House?"
+            },
+            {
+              "q": "Aslan gives Jill this many signs to remember.",
+              "a": "What is four?"
+            },
+            {
+              "q": "Puddleglum stamps out the witch's fire with this.",
+              "a": "What is his bare foot?"
+            },
+            {
+              "q": "The owls' secret midnight meeting is called this.",
+              "a": "What is a parliament (of owls)?"
+            },
+            {
+              "q": "The gnome who tells the children about the deep land of Bism.",
+              "a": "Who is Golg?"
+            }
+          ]
+        },
+        {
+          "name": "Colors",
+          "kids": true,
+          "clues": [
+            {
+              "q": "Aslan's mane is this color.",
+              "a": "What is golden?"
+            },
+            {
+              "q": "The Lady of the this-colored Kirtle.",
+              "a": "What is green?"
+            },
+            {
+              "q": "Prince Rilian is tied to a chair made of this.",
+              "a": "What is silver?"
+            },
+            {
+              "q": "Uncle Andrew's rings that take you out of our world are this color.",
+              "a": "What is yellow?"
+            },
+            {
+              "q": "The lion on Peter's shield is this color.",
+              "a": "What is red?"
+            }
+          ]
+        },
+        {
+          "name": "C.S. Lewis",
+          "clues": [
+            {
+              "q": "C.S. Lewis's nickname with his friends and family.",
+              "a": "What is Jack?"
+            },
+            {
+              "q": "Lewis and his friend Tolkien belonged to this writers' club.",
+              "a": "Who are the Inklings?"
+            },
+            {
+              "q": "Lewis was born in this city in Ireland.",
+              "a": "What is Belfast?",
+              "dd": true
+            },
+            {
+              "q": "Lewis taught at Oxford, then at this other famous university.",
+              "a": "What is Cambridge?"
+            },
+            {
+              "q": "Lewis's home in Oxford, called The this.",
+              "a": "What are the Kilns?"
+            }
+          ]
+        },
+        {
+          "name": "Endings",
+          "clues": [
+            {
+              "q": "At the end of The Lion, the Witch and the Wardrobe, the kings and queens hunt this animal and find the lamp-post.",
+              "a": "What is the White Stag?"
+            },
+            {
+              "q": "At the end of The Silver Chair, Jill and Eustace scare off these at school.",
+              "a": "Who are the bullies?"
+            },
+            {
+              "q": "At the end of The Last Battle, Aslan says the term is over and these have begun.",
+              "a": "What are the holidays?"
+            },
+            {
+              "q": "At the end of Prince Caspian, Aslan makes a doorway out of three pieces of this.",
+              "a": "What is wood?"
+            },
+            {
+              "q": "Shasta and Aravis marry, and their son becomes this famous king of Archenland.",
+              "a": "Who is Ram the Great?"
+            }
+          ]
+        }
       ]
     }
   ],
   "final": {
-    "category": "The Dedication",
-    "clue": "Lewis dedicated The Lion, the Witch and the Wardrobe to his goddaughter, who shares her first name with a Pevensie.",
-    "answer": "Who is Lucy Barfield?"
+    "category": "The End of the World",
+    "clue": "At the world's end, Reepicheep paddles over the great wave toward Aslan's Country in this small boat.",
+    "answer": "What is a coracle?"
   }
 }

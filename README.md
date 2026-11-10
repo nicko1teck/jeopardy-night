@@ -110,6 +110,27 @@ The smallest board needs only a `subject`, the `rounds`, and a `final`. Start fr
   on their clues, and only there. Change the wording for a board with
   `"rules": { "kids": "..." }`.
 
+### Difficulty scale
+
+Every board follows the same climb, so the dollar values mean something:
+
+| Value | Who should get it |
+|---|---|
+| R1 $200 | Anyone who has read or watched it once: main characters, the big premise |
+| R1 $400 | Major plot points |
+| R1 $600 | Important secondary characters, objects, places |
+| R1 $800 | Details an attentive reader remembers |
+| R1 $1000 | Specific moments, minor names |
+| R2 $400–800 | About R1 $600–1000: Double Jeopardy starts where Round 1 left off |
+| R2 $1200–1600 | Re-reader details |
+| R2 $2000 | Deep trivia, still straight from the story |
+| Youngest-players categories | Same climb, about two notches easier |
+| Final Jeopardy | Hard but fair: gettable with thought by anyone who knows the story |
+
+Within a category, each clue is clearly harder than the one above it. Daily Doubles go on the
+$800–$1600 rows of regular categories (never a youngest-players category): one in Round 1, two in
+Round 2.
+
 If a file has a mistake, the TV home screen says which file and what's wrong, and skips it.
 
 `public/games/index.json` is only used when the board runs without the server (plain static

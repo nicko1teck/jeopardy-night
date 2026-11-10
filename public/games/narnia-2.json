@@ -20,16 +20,16 @@
               "a": "Who is Peter?"
             },
             {
+              "q": "The Pevensies are sent to the Professor's house to get away from these attacks on London.",
+              "a": "What are air raids?"
+            },
+            {
               "q": "Father Christmas gives Lucy a dagger and a little diamond bottle of this healing drink.",
               "a": "What is a cordial?"
             },
             {
               "q": "The Professor's strict housekeeper, who shows visitors around the house.",
               "a": "Who is Mrs Macready?"
-            },
-            {
-              "q": "The Pevensies are sent to the Professor's house to get away from these attacks on London.",
-              "a": "What are air raids?"
             },
             {
               "q": "Susan's royal title is Susan the this.",
@@ -50,12 +50,12 @@
               "a": "What are mice?"
             },
             {
-              "q": "The gentle donkey who gets dressed up in a lion skin.",
-              "a": "Who is Puzzle?"
-            },
-            {
               "q": "Shift, the sneaky troublemaker in The Last Battle, is this kind of animal.",
               "a": "What is an ape?"
+            },
+            {
+              "q": "The gentle donkey who gets dressed up in a lion skin.",
+              "a": "Who is Puzzle?"
             },
             {
               "q": "The loyal badger who helps Caspian and never stops believing in Old Narnia.",
@@ -118,16 +118,16 @@
           "name": "Magic Objects",
           "clues": [
             {
+              "q": "Every night, Prince Rilian is tied to this.",
+              "a": "What is the silver chair?"
+            },
+            {
               "q": "The White Witch uses this to turn creatures to stone.",
               "a": "What is her wand?"
             },
             {
               "q": "Caspian blows this magic gift of Father Christmas to call for help.",
               "a": "What is Queen Susan's horn?"
-            },
-            {
-              "q": "Every night, Prince Rilian is tied to this.",
-              "a": "What is the silver chair?"
             },
             {
               "q": "In the dragon's treasure, Eustace finds a gold bracelet that belonged to this lost lord.",
@@ -151,16 +151,16 @@
               "a": "Who is Corin?"
             },
             {
-              "q": "The cab driver's wife, who becomes Narnia's very first queen.",
-              "a": "Who is Helen?"
+              "q": "The last king of Narnia.",
+              "a": "Who is Tirian?"
             },
             {
               "q": "Caspian marries the daughter of this star.",
               "a": "Who is Ramandu?"
             },
             {
-              "q": "The last king of Narnia.",
-              "a": "Who is Tirian?"
+              "q": "The cab driver's wife, who becomes Narnia's very first queen.",
+              "a": "Who is Helen?"
             }
           ]
         }
@@ -180,10 +180,6 @@
           "name": "The Lion, the Witch and the Wardrobe",
           "clues": [
             {
-              "q": "The Witch's spell keeps Narnia stuck in this season for a hundred years.",
-              "a": "What is winter?"
-            },
-            {
               "q": "The wolf who leads the Witch's secret police, until Peter kills him.",
               "a": "Who is Maugrim (Fenris Ulf)?"
             },
@@ -198,6 +194,10 @@
             {
               "q": "The Witch claims Edmund because every traitor belongs to her as her lawful this.",
               "a": "What is prey?"
+            },
+            {
+              "q": "The White Witch's dwarf, who drives her sledge.",
+              "a": "Who is Ginarrbrick?"
             }
           ]
         },
@@ -205,8 +205,8 @@
           "name": "Prince Caspian",
           "clues": [
             {
-              "q": "Lucy sees him first, but the others don't believe her.",
-              "a": "Who is Aslan?"
+              "q": "Caspian's people, who conquered Narnia and silenced the Talking Beasts.",
+              "a": "Who are the Telmarines?"
             },
             {
               "q": "Caspian's life is suddenly in danger when Miraz's wife has one of these.",
@@ -230,16 +230,16 @@
           "name": "The Voyage of the Dawn Treader",
           "clues": [
             {
-              "q": "In the magician's book, Lucy is tempted by a spell to make herself this.",
-              "a": "What is beautiful?"
+              "q": "The Dawn Treader's front is carved in the shape of this creature's head.",
+              "a": "What is a dragon?"
             },
             {
               "q": "Aslan turns Eustace back into a boy by doing this to his dragon skin.",
               "a": "What is tearing it off?"
             },
             {
-              "q": "The Dawn Treader's front is carved in the shape of this creature's head.",
-              "a": "What is a dragon?"
+              "q": "In the magician's book, Lucy is tempted by a spell to make herself this.",
+              "a": "What is beautiful?"
             },
             {
               "q": "Near the end of the world, they find the seawater has become this.",
@@ -282,20 +282,20 @@
           "name": "The Last Battle",
           "clues": [
             {
-              "q": "The cruel god the Calormenes worship.",
-              "a": "Who is Tash?"
-            },
-            {
               "q": "Shift dresses Puzzle in the skin of this animal.",
               "a": "What is a lion?"
             },
             {
-              "q": "Tirian's best friend, a unicorn.",
-              "a": "Who is Jewel?"
+              "q": "The cruel god the Calormenes worship.",
+              "a": "Who is Tash?"
             },
             {
               "q": "The building whose door leads into Aslan's Country.",
               "a": "What is the stable?"
+            },
+            {
+              "q": "Tirian's best friend, a unicorn.",
+              "a": "Who is Jewel?"
             },
             {
               "q": "The young Calormene who served Tash but is welcomed by Aslan.",
