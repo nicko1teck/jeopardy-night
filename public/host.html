@@ -182,6 +182,7 @@ function render() {
     <div class="row"><button id="hide">${hideAnswers ? 'Always show answers' : 'Hide answers until I tap'}</button></div>`;
   const a = $('#answer');
   if (a && hideAnswers) a.onclick = () => { peek = !peek; render(); };
+  updatePairBox();
   $('#hide').onclick = () => {
     hideAnswers = !hideAnswers; peek = false;
     try { localStorage.setItem('nj-host-hide', hideAnswers ? '1' : '0'); } catch (e) {}
@@ -191,13 +192,24 @@ function render() {
 
 // "Connect a TV": the TV shows a 4-digit code; typing it here hands the TV the host key.
 // It sits outside #app so live updates never wipe what you're typing.
+// While a TV is connected the box is hidden, with a small link to bring it back.
+let wantPair = false; // true after tapping "Connect another TV"
+function updatePairBox() {
+  const card = document.getElementById('paircard'), more = document.getElementById('pairmore');
+  if (!card) return;
+  const tvOn = !!(state && connected && state.tvs > 0);
+  if (!tvOn) wantPair = false;
+  card.style.display = tvOn && !wantPair ? 'none' : '';
+  more.style.display = tvOn && !wantPair ? '' : 'none';
+}
 function showPairBox() {
   const box = document.getElementById('pairbox');
   if (box.innerHTML) return;
-  box.innerHTML = `<div class="card">
+  box.innerHTML = `<div class="row" id="pairmore" style="display:none"><button id="pairopen">Connect another TV</button></div>
+  <div class="card" id="paircard">
     <div class="label">Connect a TV</div>
-    <p class="hint">Open the game on the TV. Type the 4-digit code it shows here, and that TV becomes the host board.</p>
-    <input id="pc" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="1234" style="font-size:30px;letter-spacing:8px;text-align:center">
+    <p class="hint">Open the game on the TV. It shows a 4-digit number (not the room code). Type that number here, and that TV becomes the host board.</p>
+    <input id="pc" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="4 digits" style="font-size:30px;letter-spacing:4px;text-align:center">
     <button id="pairgo">Connect TV</button>
     <p class="hint" id="pairmsg"></p>
   </div>`;
@@ -210,10 +222,12 @@ function showPairBox() {
       const r = await fetch('api/pair', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key, pair: code }) });
       const d = await r.json().catch(() => ({}));
       msg.textContent = r.ok ? 'Connected! The TV is now the host board.' : (d.error || 'That did not work.');
-      if (r.ok) document.getElementById('pc').value = '';
+      if (r.ok) { document.getElementById('pc').value = ''; wantPair = false; setTimeout(() => { msg.textContent = ''; updatePairBox(); }, 2500); }
     } catch (e) { msg.textContent = 'Could not reach the server.'; }
   };
+  document.getElementById('pairopen').onclick = () => { wantPair = true; updatePairBox(); };
   document.getElementById('pairgo').onclick = go;
+  updatePairBox();
   document.getElementById('pc').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
 }
 

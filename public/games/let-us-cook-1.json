@@ -1,0 +1,104 @@
+{
+  "title": "Let Us Cook",
+  "subject": "Let Us Cook",
+  "edition": "Game 1",
+  "rounds": [
+    {
+      "categories": [
+        { "name": "Around the World", "clues": [
+          { "q": "Sushi comes from this country.", "a": "What is Japan?" },
+          { "q": "Tacos and enchiladas come from this country.", "a": "What is Mexico?" },
+          { "q": "Paella, a rice dish cooked in a wide, flat pan, comes from this country.", "a": "What is Spain?" },
+          { "q": "Pierogi, dumplings stuffed with potato and cheese, are a classic dish of this country.", "a": "What is Poland?" },
+          { "q": "Feijoada, a black bean and pork stew, is often called the national dish of this country.", "a": "What is Brazil?" }
+        ]},
+        { "name": "Name That Dish", "clues": [
+          { "q": "A flat round of dough topped with tomato sauce and cheese, then baked.", "a": "What is pizza?" },
+          { "q": "Cheese melted between two slices of buttered bread, cooked in a pan.", "a": "What is a grilled cheese sandwich?" },
+          { "q": "Ground chickpeas shaped into balls and deep-fried, often tucked into a pita.", "a": "What is falafel?" },
+          { "q": "Ground lamb in gravy, topped with mashed potatoes and baked.", "a": "What is shepherd's pie?" },
+          { "q": "Beef tenderloin coated in mushrooms and wrapped in puff pastry, named after a British duke.", "a": "What is Beef Wellington?" }
+        ]},
+        { "name": "Kitchen Basics", "kids": true, "clues": [
+          { "q": "The big kitchen appliance that keeps food cold.", "a": "What is a refrigerator?" },
+          { "q": "The yellow part of an egg.", "a": "What is the yolk?" },
+          { "q": "Popcorn pops from the kernels of this plant.", "a": "What is corn?" },
+          { "q": "The flat tool you use to flip pancakes.", "a": "What is a spatula?" },
+          { "q": "The bowl full of holes you pour spaghetti into to drain the water.", "a": "What is a colander (a strainer)?" }
+        ]},
+        { "name": "Spice Rack", "clues": [
+          { "q": "It sits next to the salt shaker on most tables.", "a": "What is pepper?" },
+          { "q": "This spice comes from tree bark and makes a breakfast roll famous.", "a": "What is cinnamon?" },
+          { "q": "This red powder made from dried peppers is sprinkled on deviled eggs.", "a": "What is paprika?" },
+          { "q": "This bright yellow spice gives curry its color.", "a": "What is turmeric?", "dd": true },
+          { "q": "The world's most expensive spice, it's the tiny red threads of a crocus flower.", "a": "What is saffron?" }
+        ]},
+        { "name": "Fruits and Veggies", "clues": [
+          { "q": "Popeye ate this leafy green to get strong.", "a": "What is spinach?" },
+          { "q": "Guacamole is made by mashing this green fruit.", "a": "What is an avocado?" },
+          { "q": "Pickles start out as this vegetable.", "a": "What is a cucumber?" },
+          { "q": "This deep red root vegetable turns borscht purple.", "a": "What is a beet?" },
+          { "q": "This spiky Southeast Asian fruit is so smelly it's banned on some trains.", "a": "What is durian?" }
+        ]},
+        { "name": "Sweet Treats", "clues": [
+          { "q": "This frozen dessert is often scooped into a cone.", "a": "What is ice cream?" },
+          { "q": "Graham crackers, chocolate and a toasted marshmallow make this campfire treat.", "a": "What are s'mores?" },
+          { "q": "This buttery French pastry is shaped like a crescent moon.", "a": "What is a croissant?" },
+          { "q": "This Italian dessert layers coffee-soaked ladyfingers with mascarpone cream.", "a": "What is tiramisu?" },
+          { "q": "This meringue dessert topped with fruit is named after a Russian ballerina.", "a": "What is a pavlova?" }
+        ]}
+      ]
+    },
+    {
+      "categories": [
+        { "name": "Cooking Words", "clues": [
+          { "q": "To cook small pieces of food quickly in hot oil while stirring, usually in a wok.", "a": "What is stir-fry?" },
+          { "q": "To heat sugar until it melts and turns golden brown.", "a": "What is caramelize?" },
+          { "q": "Italian for \"to the tooth,\" it describes pasta that's cooked but still firm.", "a": "What is al dente?" },
+          { "q": "To dunk vegetables in boiling water briefly, then plunge them into ice water.", "a": "What is blanching?" },
+          { "q": "French for \"under vacuum,\" it's cooking sealed food in a precisely heated water bath.", "a": "What is sous vide?" }
+        ]},
+        { "name": "National Dishes", "clues": [
+          { "q": "Fries topped with cheese curds and gravy, from this country.", "a": "What is Canada?" },
+          { "q": "Haggis, made with sheep's heart, liver and lungs, is the national dish of this country.", "a": "What is Scotland?" },
+          { "q": "Pho, a noodle soup in a rich broth, comes from this country.", "a": "What is Vietnam?" },
+          { "q": "Goulash, a paprika-spiced beef stew, comes from this country.", "a": "What is Hungary?" },
+          { "q": "Bobotie, spiced minced meat baked under an egg topping, is a national dish of this country.", "a": "What is South Africa?" }
+        ]},
+        { "name": "Snack Attack", "kids": true, "clues": [
+          { "q": "French fries are made from this vegetable.", "a": "What is a potato?" },
+          { "q": "It goes with peanut butter in a famous sandwich.", "a": "What is jelly (or jam)?" },
+          { "q": "In mac and cheese, \"mac\" is short for this kind of pasta.", "a": "What is macaroni?" },
+          { "q": "Tortilla chips covered in melted cheese.", "a": "What are nachos?" },
+          { "q": "Bread dipped in egg and milk, then fried, and named for a European country.", "a": "What is French toast?" }
+        ]},
+        { "name": "Cheese, Please", "clues": [
+          { "q": "This cheese is famous for its holes.", "a": "What is Swiss cheese?" },
+          { "q": "This soft, stretchy cheese melts on top of most pizzas.", "a": "What is mozzarella?" },
+          { "q": "This crumbly, salty Greek cheese goes in Greek salads.", "a": "What is feta?" },
+          { "q": "Called the \"King of Cheeses,\" this hard Italian cheese is grated over pasta.", "a": "What is Parmigiano-Reggiano (Parmesan)?", "dd": true },
+          { "q": "This French blue cheese made from sheep's milk is aged in caves.", "a": "What is Roquefort?" }
+        ]},
+        { "name": "Chefs and Food History", "clues": [
+          { "q": "This fiery British chef yells at cooks on Hell's Kitchen.", "a": "Who is Gordon Ramsay?" },
+          { "q": "This American chef taught TV audiences French cooking on The French Chef.", "a": "Who is Julia Child?" },
+          { "q": "This food is named after an English earl who supposedly wanted to eat without leaving the card table.", "a": "What is the sandwich?", "dd": true },
+          { "q": "The Aztecs drank a bitter, spicy drink made from the beans of this plant.", "a": "What is cacao (chocolate)?" },
+          { "q": "Caesar salad was invented in the 1920s in this Mexican border city.", "a": "What is Tijuana?" }
+        ]},
+        { "name": "Breads and Pastas", "clues": [
+          { "q": "This ingredient makes bread dough rise.", "a": "What is yeast?" },
+          { "q": "This long, skinny loaf of bread is a symbol of France.", "a": "What is a baguette?" },
+          { "q": "This Indian flatbread is baked against the wall of a clay tandoor oven.", "a": "What is naan?" },
+          { "q": "This braided bread is eaten on the Jewish Sabbath.", "a": "What is challah?" },
+          { "q": "This pasta's name means \"little ears\" in Italian.", "a": "What is orecchiette?" }
+        ]}
+      ]
+    }
+  ],
+  "final": {
+    "category": "Hot Stuff",
+    "clue": "The heat of chili peppers is measured on this scale, named after the American pharmacist who invented it in 1912.",
+    "answer": "What is the Scoville scale?"
+  }
+}

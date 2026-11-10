@@ -1,6 +1,6 @@
 'use strict';
 // Jeopardy Night server.
-// Plain Node (18+). Its one npm package, mysql2, is only for game history (db.js). It does five jobs:
+// Plain Node (18+), no npm packages. It does four jobs:
 //   1. Serves the files in ./public (the TV board, the phone page, the question files),
 //      and lists every question file in public/games so a new board just needs dropping in.
 //   2. Keeps the "room" state: which game is being played, the teams that registered,
@@ -9,7 +9,6 @@
 //      that only goes server -> browser. Browsers talk back with ordinary POST requests.
 //   4. Saves the room to disk as it changes (plus the TV's copy of the board), so a crash,
 //      restart or redeploy picks up exactly where the game left off.
-//   5. Saves every game's history (teams, clues, results, Final answers) to the database (db.js).
 //
 // The TV is the host and proves it with HOST_KEY. Phones prove they belong to the
 // room with the 4-letter code shown on the TV. The TV keeps the board and the scores
@@ -20,7 +19,6 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const os = require('os');
-const db = require('./db');
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST_KEY = process.env.HOST_KEY || crypto.randomBytes(4).toString('hex');
@@ -29,7 +27,6 @@ const GAMES_DIR = path.join(PUBLIC_DIR, 'games');
 // Saved game lives outside the app folder, so git pulls and redeploys never touch it.
 const DATA_DIR = process.env.DATA_DIR || path.join(os.homedir(), '.jeopardy-night');
 const DATA_FILE = path.join(DATA_DIR, 'room.json');
-db.init(DATA_DIR); // game history; stays off if there are no database settings
 const EARLY_PENALTY_MS = 500; // buzz before the host opens the buzzers and you're frozen this long
 const MAX_TEAMS = 4;
 
@@ -167,7 +164,10 @@ function stateFor(client) {
     seq: room.seq,
   };
   if (client.role === 'host') {
-    return { ...base, code: room.code, view: room.hostView };
+    // tvs: how many host boards are connected, so the host page can hide "Connect a TV".
+    let tvs = 0;
+    for (const c of clients) if (c.role === 'tv') tvs++;
+    return { ...base, code: room.code, view: room.hostView, tvs };
   }
   if (client.role === 'tv') {
     return { ...base, code: room.code, phones: phoneCounts(), dd: room.dd, final: room.final };
@@ -254,12 +254,6 @@ function hostAction(body) {
     if (body.snapshot !== null && (typeof body.snapshot !== 'object' || Array.isArray(body.snapshot))) return false;
     room.snapshot = body.snapshot;
     scheduleSave();
-    return true;
-  }
-  // Game history for the database: saved in the background, never broadcast.
-  if (body.action === 'record') {
-    if (!body.rec || typeof body.rec !== 'object') return false;
-    db.record(body.rec);
     return true;
   }
   if (Array.isArray(body.scores)) room.scores = room.teams.map((_, i) => Number(body.scores[i]) || 0);
