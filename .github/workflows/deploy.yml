@@ -1,0 +1,99 @@
+# Jeopardy Night - continuous delivery to EC2 (the Hobby Lobby app server)
+# Every push to main: the server pulls the new code, restarts the game, then we health-check it.
+#
+# No keys or passwords are stored for this. GitHub gives each run a short-lived
+# OIDC token; AWS swaps it for the temporary deploy role, which may run commands
+# on the server through Session Manager (SSM Run Command).
+#
+# Required repository VARIABLES (Settings > Secrets and variables > Actions > Variables):
+#   AWS_DEPLOY_ROLE_ARN   ARN of the deploy role (shared with Phantom Black Ops)
+#   EC2_INSTANCE_ID       the server's instance ID
+#
+# The host key lives in ~/jeopardy.config.js on the server, outside the repo, and is never touched.
+# Restarting ends any game in progress: the TV can Resume, but phones must rejoin.
+# The server runs on a schedule; a deploy while it's off will time out.
+
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # also allows a manual "Run workflow" button
+
+concurrency:
+  group: deploy-jeopardy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  SITE: https://jeopardy.nickowen.info
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # lets this job request its OIDC token
+      contents: read
+    steps:
+      # Quick sanity check: the server file must at least parse before we ship it.
+      - uses: actions/checkout@v4
+      - name: Check the server code parses
+        run: node --check server.js
+
+      # Swap GitHub's OIDC token for temporary AWS credentials (pinned to a commit, as GitHub's docs show).
+      - name: Get temporary AWS credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Run Command runs as root; the pull and restart run as ec2-user, who owns the app and pm2.
+      # Plain "pm2 restart" keeps the host key and port pm2 already has from jeopardy.config.js.
+      - name: Tell the server to pull and restart (SSM Run Command)
+        run: |
+          PARAMS=$(jq -n \
+            --arg run "sudo -iu ec2-user bash -lc 'cd ~/jeopardy-night && git pull --ff-only && pm2 restart jeopardy && pm2 save'" \
+            '{commands: [$run]}')
+          CMD_ID=$(aws ssm send-command \
+            --instance-ids "${{ vars.EC2_INSTANCE_ID }}" \
+            --document-name AWS-RunShellScript \
+            --comment "Deploy jeopardy-night ${GITHUB_SHA::7}" \
+            --timeout-seconds 300 \
+            --parameters "$PARAMS" \
+            --query Command.CommandId --output text)
+          echo "Command ID: $CMD_ID"
+          echo "CMD_ID=$CMD_ID" >> "$GITHUB_ENV"
+
+      - name: Wait for the result
+        run: |
+          STATUS="Pending"
+          for i in $(seq 1 60); do
+            sleep 5
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$CMD_ID" --instance-id "${{ vars.EC2_INSTANCE_ID }}" \
+              --query Status --output text 2>/dev/null || echo Pending)
+            case "$STATUS" in Pending|InProgress|Delayed) continue ;; *) break ;; esac
+          done
+          echo "Status: $STATUS"
+          aws ssm get-command-invocation \
+            --command-id "$CMD_ID" --instance-id "${{ vars.EC2_INSTANCE_ID }}" \
+            --query '[StandardOutputContent, StandardErrorContent]' --output text || true
+          case "$STATUS" in
+            Success) echo "Server pulled and restarted." ;;
+            Failed)  echo "::error::The pull or restart failed on the server. See its output above."; exit 1 ;;
+            *)       echo "::error::The server never finished the command (status: $STATUS). Is it running?"; exit 1 ;;
+          esac
+
+      # Make sure the live site actually answers after the restart.
+      - name: Health check
+        run: |
+          for i in $(seq 1 10); do
+            if curl -fsS "$SITE/api/ping"; then echo; echo "Live site is answering."; exit 0; fi
+            sleep 3
+          done
+          echo "::error::$SITE/api/ping did not answer after the restart."
+          exit 1
