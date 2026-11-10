@@ -221,13 +221,19 @@ function toast(msg, ms = 2500) {
 // ======================================================================
 // Server connection
 // ======================================================================
+// The host key can arrive once in the link (?key=...). It's remembered in this browser and
+// removed from the address bar straight away, so nobody watching the TV can read it.
+const URL_KEY = new URLSearchParams(location.search).get('key');
+if (URL_KEY) history.replaceState(null, '', location.pathname);
+function storedKey() { try { return localStorage.getItem('nj-host-key'); } catch (e) { return null; } }
+function storeKey(k) { try { if (k) localStorage.setItem('nj-host-key', k); else localStorage.removeItem('nj-host-key'); } catch (e) {} }
+
 const NET = {
   on: false, key: null, state: null, es: null,
 
   async init() {
-    const fromUrl = new URLSearchParams(location.search).get('key');
-    let key = fromUrl;
-    try { if (fromUrl) localStorage.setItem('nj-host-key', fromUrl); else key = localStorage.getItem('nj-host-key'); } catch (e) {}
+    if (URL_KEY) storeKey(URL_KEY);
+    const key = URL_KEY || storedKey();
     try {
       const r = await fetch('api/ping', { cache: 'no-store' });
       if (!r.ok) return;
@@ -245,7 +251,7 @@ const NET = {
         if (first) resolve(); else onNet(prev, NET.state);
       };
       NET.es.addEventListener('kicked', () => {
-        NET.es.close(); NET.on = false; NET.badKey = true; resolve();
+        NET.es.close(); NET.on = false; NET.badKey = true; storeKey(null); resolve();
       });
       setTimeout(resolve, 4000);
     });
@@ -618,15 +624,50 @@ function resumeCandidate() {
 // ======================================================================
 const V = {};
 
+// With a server but no host key: this is probably a player who opened the wrong page,
+// so point them to the buzzer page. The host pairs this screen from their phone with the
+// 4-digit code (or types the key in once as a backup).
+let PAIR_CODE = null;
+function startPairing() {
+  const es = new EventSource('pair');
+  es.addEventListener('paircode', (e) => {
+    PAIR_CODE = JSON.parse(e.data).code;
+    const el = document.getElementById('paircode');
+    if (el) el.textContent = PAIR_CODE;
+  });
+  es.addEventListener('paired', (e) => {
+    es.close();
+    storeKey(JSON.parse(e.data).key);
+    Sounds.play('right');
+    setTimeout(() => location.reload(), 400);
+  });
+}
+
+function hostKeyScreen() {
+  const base = location.host + location.pathname.replace(/[^/]*$/, '');
+  return `<div class="screen">
+    <h1 class="title">Jeopardy <span class="gold">Night</span></h1>
+    <p class="sub">Playing? On your phone, go to</p>
+    <div class="joinbox"><div class="url" style="font-size:3vw"><b>${esc(base + 'buzz')}</b></div></div>
+    <p class="sub" style="margin-top:3vh">Hosting? Open <b>${esc(base + 'host')}</b> on your phone and enter</p>
+    <div class="joinbox"><div class="code" id="paircode">${esc(PAIR_CODE || '····')}</div></div>
+    ${NET.badKey ? '<p class="note">The saved host key was not accepted. Pair again.</p>' : ''}
+    <div class="row" style="opacity:.75">
+      <span class="note">Or type the host key:</span>
+      <input class="tin" id="hostkey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Host key" style="width:22vw">
+      <button class="btn small" data-act="setkey">Host</button>
+    </div>
+  </div>`;
+}
+
 V.home = () => {
+  if (NET.server && !NET.on) return hostKeyScreen();
   const saved = resumeCandidate();
   const canResume = !!saved;
   const playable = GAMES.filter((g) => !g.error);
   const broken = GAMES.filter((g) => g.error);
   let mode;
   if (NET.on) mode = `<p class="note">Buzzers are on. Phones will join with a room code.</p>`;
-  else if (NET.badKey) mode = `<p class="note">The host key in the link was not accepted, so buzzers are off. Check the link the server printed.</p>`;
-  else if (NET.server) mode = `<p class="note">Buzzers are off. Open this page with <b>?key=</b> and your host key to turn them on.</p>`;
   else mode = `<p class="note">Buzzers are off: teams answer out loud and the host judges.</p>`;
   return `<div class="screen">
     <h1 class="title">Jeopardy <span class="gold">Night</span></h1>
@@ -1032,6 +1073,12 @@ const ACTIONS = {
     else { S.lobbyTeams.splice(t, 1); drawLobbyTeams(); }
   },
   start: startGame,
+  setkey() {
+    const k = ($('#hostkey') && $('#hostkey').value || '').trim();
+    if (!k) { $('#hostkey').focus(); return; }
+    storeKey(k);
+    location.reload();
+  },
   home: goHome,
   pick: (d) => pick(Number(d.c), Number(d.i)),
   revealcat(d) {
@@ -1136,6 +1183,7 @@ document.addEventListener('pointerover', (e) => {
 
 $('#stage').addEventListener('keydown', (e) => {
   if (e.target.id === 'newteam' && e.key === 'Enter') ACTIONS.addteam();
+  if (e.target.id === 'hostkey' && e.key === 'Enter') ACTIONS.setkey();
 });
 
 // Spatial navigation: move focus to the nearest button in the direction pressed.
@@ -1234,6 +1282,7 @@ requestAnimationFrame(pollPads);
     } catch (e) {}
   }
   await refreshGames();
+  if (NET.server && !NET.on) startPairing();
   render();
 })();
 </script>

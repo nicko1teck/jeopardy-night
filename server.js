@@ -201,7 +201,23 @@ function kickPhones() {
 }
 
 // Comment lines keep proxies (and Xbox Edge) from closing a quiet stream.
-setInterval(() => { for (const c of clients) c.res.write(': ping\n\n'); }, 20000);
+setInterval(() => {
+  for (const c of clients) c.res.write(': ping\n\n');
+  for (const res of pairing.values()) res.write(': ping\n\n');
+}, 20000);
+
+// ---------- pairing a TV from the host's phone ----------
+// A TV without the host key opens a "pair" stream and shows a 4-digit code. The host types that
+// code on the host cards page (which already knows the key), and the server hands the key to that
+// one TV over its stream. The code only identifies the TV; pairing still needs the host key.
+const pairing = new Map(); // code -> the TV's open stream
+function newPairCode() {
+  for (let i = 0; i < 50; i++) {
+    const c = String(crypto.randomInt(10000)).padStart(4, '0');
+    if (!pairing.has(c)) return c;
+  }
+  return String(crypto.randomInt(100000, 1000000));
+}
 
 // ---------- helpers ----------
 function json(res, status, body) {
@@ -408,6 +424,15 @@ const server = http.createServer(async (req, res) => {
     return json(res, 200, { code: room.code, gameId: room.gameId, snapshot: room.snapshot });
   }
 
+  if (req.method === 'GET' && p === '/pair') {
+    res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive', 'X-Accel-Buffering': 'no' });
+    const code = newPairCode();
+    pairing.set(code, res);
+    res.write(`retry: 2000\nevent: paircode\ndata: ${JSON.stringify({ code })}\n\n`);
+    req.on('close', () => { if (pairing.get(code) === res) pairing.delete(code); });
+    return;
+  }
+
   if (req.method === 'GET' && p === '/events') {
     const role = url.searchParams.get('role');
     const team = Number(url.searchParams.get('team'));
@@ -438,6 +463,14 @@ const server = http.createServer(async (req, res) => {
       if (!keyOk(body.key)) return json(res, 403, { error: 'bad host key' });
       const r = hostAction(body);
       return json(res, r ? 200 : 400, typeof r === 'object' ? r : { ok: !!r });
+    }
+    if (p === '/api/pair') {
+      if (!keyOk(body.key)) return json(res, 403, { error: 'bad host key' });
+      const tv = pairing.get(String(body.pair || '').trim());
+      if (!tv) return json(res, 404, { error: 'No TV is showing that code. Check the number on the TV.' });
+      tv.write(`event: paired\ndata: ${JSON.stringify({ key: body.key })}\n\n`);
+      pairing.delete(String(body.pair).trim());
+      return json(res, 200, { ok: true });
     }
     if (!codeOk(body.code)) return json(res, 403, { error: "That room code doesn't match the one on the TV." });
     if (p === '/api/join') return json(res, 200, { title: room.title, teams: room.teams.map((t) => t.name), lobby: room.phase === 'lobby' });

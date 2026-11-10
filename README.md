@@ -37,9 +37,12 @@ HOST_KEY=pick-a-secret PORT=3000 node server.js
 
 Then:
 
-- **TV**: `http://your-server:3000/?key=pick-a-secret`. The key is remembered after the first visit.
+- **TV**: open `http://your-server:3000/`. A TV that doesn't know the host key shows a
+  4-digit code: type it into **Connect a TV** on your host cards page and that TV becomes the host
+  board (it remembers). Backups: type the key into the TV's box, or open `/?key=...` once. The key
+  never stays in the address bar. Players who open this page are told to go to `/buzz`.
 - **Phones**: `http://your-server:3000/buzz`, then the code shown on the TV.
-- **Host cards** (your phone): `http://your-server:3000/host?key=pick-a-secret`. It shows the
+- **Host cards** (your phone): `http://your-server:3000/host`, then the host key once. Also where you **Connect a TV**. It shows the
   answer to whatever clue is on the TV, who buzzed in, and the scores. It needs the host key,
   and the server never sends answers to players' phones. "Hide answers until I tap" blurs
   them for when the kids are sitting beside you.

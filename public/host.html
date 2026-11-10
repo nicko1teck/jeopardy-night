@@ -45,6 +45,7 @@
 </head>
 <body>
 <div id="app"></div>
+<div id="pairbox"></div>
 <script>
 'use strict';
 // Host cards: the host's private view, on a phone beside the TV.
@@ -56,6 +57,7 @@ const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':
 const money = (n) => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-US');
 
 let key = new URLSearchParams(location.search).get('key');
+if (key) history.replaceState(null, '', location.pathname); // don't leave the key showing in the address bar
 try { if (key) localStorage.setItem('nj-host-key', key); else key = localStorage.getItem('nj-host-key'); } catch (e) {}
 let hideAnswers = false;
 try { hideAnswers = localStorage.getItem('nj-host-hide') === '1'; } catch (e) {}
@@ -71,7 +73,7 @@ function askForKey(msg) {
     <div class="card">
       <div class="big">Host key</div>
       <p class="hint">${esc(msg || 'Enter the host key from your TV link (the part after ?key=).')}</p>
-      <input id="k" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input id="k" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button id="go">Open host cards</button>
     </div>`;
   $('#go').onclick = () => {
@@ -79,6 +81,7 @@ function askForKey(msg) {
     if (!key) return;
     try { localStorage.setItem('nj-host-key', key); } catch (e) {}
     connect();
+    showPairBox();
   };
 }
 
@@ -97,6 +100,7 @@ function connect() {
     render();
   };
   es.addEventListener('kicked', () => {
+    document.getElementById('pairbox').innerHTML = '';
     try { localStorage.removeItem('nj-host-key'); } catch (e) {}
     askForKey('That host key was not accepted. Check the link the server printed.');
   });
@@ -185,7 +189,35 @@ function render() {
   };
 }
 
-if (key) { render(); connect(); } else askForKey();
+// "Connect a TV": the TV shows a 4-digit code; typing it here hands the TV the host key.
+// It sits outside #app so live updates never wipe what you're typing.
+function showPairBox() {
+  const box = document.getElementById('pairbox');
+  if (box.innerHTML) return;
+  box.innerHTML = `<div class="card">
+    <div class="label">Connect a TV</div>
+    <p class="hint">Open the game on the TV. Type the 4-digit code it shows here, and that TV becomes the host board.</p>
+    <input id="pc" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="1234" style="font-size:30px;letter-spacing:8px;text-align:center">
+    <button id="pairgo">Connect TV</button>
+    <p class="hint" id="pairmsg"></p>
+  </div>`;
+  const go = async () => {
+    const msg = document.getElementById('pairmsg');
+    const code = document.getElementById('pc').value.trim();
+    if (!code) return;
+    msg.textContent = 'Connecting…';
+    try {
+      const r = await fetch('api/pair', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key, pair: code }) });
+      const d = await r.json().catch(() => ({}));
+      msg.textContent = r.ok ? 'Connected! The TV is now the host board.' : (d.error || 'That did not work.');
+      if (r.ok) document.getElementById('pc').value = '';
+    } catch (e) { msg.textContent = 'Could not reach the server.'; }
+  };
+  document.getElementById('pairgo').onclick = go;
+  document.getElementById('pc').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+}
+
+if (key) { render(); connect(); showPairBox(); } else askForKey();
 </script>
 </body>
 </html>
