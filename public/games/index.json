@@ -1,4 +1,6 @@
 [
+  {"file": "american-history-1.json", "title": "American History Jeopardy", "edition": "Junior High · Game 1"},
+  {"file": "bible-1.json", "title": "Bible Jeopardy", "edition": "Game 1"},
   {"file": "green-ember-1.json", "title": "Green Ember Jeopardy", "edition": "Book 1"},
   {"file": "harry-potter-1.json", "title": "Harry Potter Jeopardy", "edition": "Game 1"},
   {"file": "middle-earth-1.json", "title": "Hobbit Jeopardy", "edition": "Game 1"},
@@ -6,5 +8,6 @@
   {"file": "narnia-1.json", "title": "Narnian Jeopardy", "edition": "Game 1"},
   {"file": "narnia-2.json", "title": "Narnian Jeopardy", "edition": "Game 2"},
   {"file": "narnia-3.json", "title": "Narnian Jeopardy", "edition": "Game 3"},
-  {"file": "rangers-apprentice-1.json", "title": "Ranger's Apprentice Jeopardy", "edition": "Book 1: The Ruins of Gorlan"}
+  {"file": "rangers-apprentice-1.json", "title": "Ranger's Apprentice Jeopardy", "edition": "Book 1: The Ruins of Gorlan"},
+  {"file": "science-7-1.json", "title": "7th Grade Science Jeopardy", "edition": "Game 1"}
 ]

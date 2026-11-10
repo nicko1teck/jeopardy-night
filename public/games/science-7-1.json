@@ -1,0 +1,103 @@
+{
+  "subject": "7th Grade Science",
+  "edition": "Game 1",
+  "rounds": [
+    {
+      "categories": [
+        { "name": "Cells", "clues": [
+          { "q": "The basic unit of all living things.", "a": "What is a cell?" },
+          { "q": "The cell's control center, which holds its DNA.", "a": "What is the nucleus?" },
+          { "q": "Known as the powerhouse of the cell, it turns food into energy.", "a": "What are the mitochondria?" },
+          { "q": "The green parts of a plant cell where photosynthesis happens.", "a": "What are chloroplasts?" },
+          { "q": "This thin, flexible layer around every cell controls what goes in and out.", "a": "What is the cell membrane?" }
+        ]},
+        { "name": "The Human Body", "clues": [
+          { "q": "The organ that pumps blood around your body.", "a": "What is the heart?" },
+          { "q": "The largest organ of the human body.", "a": "What is the skin?" },
+          { "q": "These blood vessels carry blood away from the heart.", "a": "What are arteries?" },
+          { "q": "The number of bones in an adult human body.", "a": "What is 206?" },
+          { "q": "The tiny air sacs in the lungs where oxygen passes into the blood.", "a": "What are alveoli?" }
+        ]},
+        { "name": "Science Basics", "kids": true, "clues": [
+          { "q": "The force that pulls things down toward the ground.", "a": "What is gravity?" },
+          { "q": "When water freezes, it turns into this.", "a": "What is ice?" },
+          { "q": "The three states of matter are solid, liquid, and this.", "a": "What is gas?" },
+          { "q": "The Earth travels around this star once a year.", "a": "What is the Sun?" },
+          { "q": "Animals that eat only plants are called this.", "a": "What are herbivores?" }
+        ]},
+        { "name": "Rocks and Minerals", "clues": [
+          { "q": "Melted rock underneath the Earth's surface.", "a": "What is magma?" },
+          { "q": "The kind of rock that forms when lava or magma cools and hardens.", "a": "What is igneous?" },
+          { "q": "The kind of rock made from layers of sand, mud and pebbles pressed together.", "a": "What is sedimentary?" },
+          { "q": "Heat and pressure change rock into this kind.", "a": "What is metamorphic?" },
+          { "q": "The softest mineral, ranked 1 on the Mohs hardness scale.", "a": "What is talc?" }
+        ]},
+        { "name": "Forces and Motion", "clues": [
+          { "q": "A push or a pull.", "a": "What is a force?" },
+          { "q": "The force that slows things down when two surfaces rub together.", "a": "What is friction?" },
+          { "q": "An object's tendency to keep doing what it's already doing, from Newton's first law.", "a": "What is inertia?" },
+          { "q": "Newton's second law: force equals mass times this.", "a": "What is acceleration?", "dd": true },
+          { "q": "The metric unit of force, named after a famous scientist.", "a": "What is the newton?" }
+        ]},
+        { "name": "The Scientific Method", "clues": [
+          { "q": "An educated guess that you can test.", "a": "What is a hypothesis?" },
+          { "q": "The one thing you change on purpose in an experiment.", "a": "What is the independent variable?" },
+          { "q": "The group that gets no treatment, so you have something to compare against.", "a": "What is the control group?" },
+          { "q": "The thing you measure, which changes in response.", "a": "What is the dependent variable?" },
+          { "q": "A well-tested explanation backed by lots of evidence, like plate tectonics.", "a": "What is a theory?" }
+        ]}
+      ]
+    },
+    {
+      "categories": [
+        { "name": "Genetics", "clues": [
+          { "q": "The molecule shaped like a twisted ladder that carries genetic instructions.", "a": "What is DNA?" },
+          { "q": "The monk whose pea plant experiments made him the father of genetics.", "a": "Who is Gregor Mendel?" },
+          { "q": "A trait that shows up even if you have only one copy of its gene.", "a": "What is dominant?" },
+          { "q": "The grid used to predict the possible offspring of two parents.", "a": "What is a Punnett square?" },
+          { "q": "An organism with two different alleles for a trait, like Bb.", "a": "What is heterozygous?" }
+        ]},
+        { "name": "Ecology", "clues": [
+          { "q": "Living things that make their own food, like plants.", "a": "What are producers?" },
+          { "q": "Many food chains overlapping together make this.", "a": "What is a food web?" },
+          { "q": "Organisms like fungi and bacteria that break down dead things.", "a": "What are decomposers?" },
+          { "q": "A relationship between two species where both benefit.", "a": "What is mutualism?", "dd": true },
+          { "q": "The largest population an environment can support.", "a": "What is carrying capacity?" }
+        ]},
+        { "name": "Earth's Layers and Plates", "clues": [
+          { "q": "The thin outer layer of the Earth that we live on.", "a": "What is the crust?" },
+          { "q": "The Earth's inner core is made mostly of these two metals.", "a": "What are iron and nickel?" },
+          { "q": "The giant supercontinent that broke apart millions of years ago.", "a": "What is Pangaea?", "dd": true },
+          { "q": "The kind of plate boundary where plates slide past each other, like the San Andreas Fault.", "a": "What is a transform boundary?" },
+          { "q": "The scientist who first proposed the idea of continental drift.", "a": "Who is Alfred Wegener?" }
+        ]},
+        { "name": "Weather and Water", "clues": [
+          { "q": "Water vapor cooling into liquid droplets, which forms clouds.", "a": "What is condensation?" },
+          { "q": "The instrument that measures air pressure.", "a": "What is a barometer?" },
+          { "q": "The lowest layer of the atmosphere, where all our weather happens.", "a": "What is the troposphere?" },
+          { "q": "Plants give off water vapor through their leaves in this process.", "a": "What is transpiration?" },
+          { "q": "Because the Earth spins, winds and ocean currents curve. This is called this.", "a": "What is the Coriolis effect?" }
+        ]},
+        { "name": "Energy and Atoms", "clues": [
+          { "q": "The energy of motion.", "a": "What is kinetic energy?" },
+          { "q": "Stored energy, like a ball sitting at the top of a hill.", "a": "What is potential energy?" },
+          { "q": "The law that says energy cannot be created or destroyed.", "a": "What is the law of conservation of energy?" },
+          { "q": "Besides protons, an atom's nucleus holds these.", "a": "What are neutrons?" },
+          { "q": "The number of protons in an atom is called this.", "a": "What is the atomic number?" }
+        ]},
+        { "name": "Animal Kingdom", "kids": true, "clues": [
+          { "q": "Whales and dolphins breathe air because they are these, not fish.", "a": "What are mammals?" },
+          { "q": "Animals with a backbone are called this.", "a": "What are vertebrates?" },
+          { "q": "A caterpillar turns into a butterfly in this amazing change.", "a": "What is metamorphosis?" },
+          { "q": "Frogs, toads and salamanders belong to this group of animals.", "a": "What are amphibians?" },
+          { "q": "Animals that sleep in the day and are active at night are called this.", "a": "What is nocturnal?" }
+        ]}
+      ]
+    }
+  ],
+  "final": {
+    "category": "The Elements",
+    "clue": "It's the only metal that is a liquid at room temperature.",
+    "answer": "What is mercury?"
+  }
+}

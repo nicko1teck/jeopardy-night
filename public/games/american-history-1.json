@@ -1,0 +1,103 @@
+{
+  "subject": "American History",
+  "edition": "Junior High · Game 1",
+  "rounds": [
+    {
+      "categories": [
+        { "name": "Colonial America", "clues": [
+          { "q": "Founded in 1607, it was the first permanent English settlement in America.", "a": "What is Jamestown?" },
+          { "q": "The ship that carried the Pilgrims to Plymouth in 1620.", "a": "What is the Mayflower?" },
+          { "q": "This Patuxet man helped the Pilgrims survive by teaching them to plant corn.", "a": "Who is Squanto (Tisquantum)?" },
+          { "q": "William Penn founded this colony as a \"holy experiment\" in religious freedom.", "a": "What is Pennsylvania?" },
+          { "q": "The English colony that vanished, leaving only the word CROATOAN carved on a post.", "a": "What is Roanoke?" }
+        ]},
+        { "name": "The Revolution", "clues": [
+          { "q": "In this 1773 protest, colonists dumped tea into a harbor.", "a": "What is the Boston Tea Party?" },
+          { "q": "The first shots of the war were fired at Lexington and this town.", "a": "What is Concord?" },
+          { "q": "Washington's army survived the brutal winter of 1777–78 at this Pennsylvania camp.", "a": "What is Valley Forge?" },
+          { "q": "In 1781, Cornwallis surrendered to Washington at this Virginia town.", "a": "What is Yorktown?", "dd": true },
+          { "q": "This 1777 American victory is called the turning point because it brought France into the war.", "a": "What is Saratoga?" }
+        ]},
+        { "name": "Founding Documents", "clues": [
+          { "q": "Signed in 1776, it announced that the colonies were free from Britain.", "a": "What is the Declaration of Independence?" },
+          { "q": "The first ten amendments to the Constitution.", "a": "What is the Bill of Rights?" },
+          { "q": "The main author of the Declaration of Independence.", "a": "Who is Thomas Jefferson?" },
+          { "q": "America's first constitution, which created a weak national government.", "a": "What are the Articles of Confederation?" },
+          { "q": "This deal created a Congress with one house based on population and one with equal votes for every state.", "a": "What is the Great (Connecticut) Compromise?" }
+        ]},
+        { "name": "American Symbols", "kids": true, "clues": [
+          { "q": "The national bird of the United States.", "a": "What is the bald eagle?" },
+          { "q": "The first President of the United States.", "a": "Who is George Washington?" },
+          { "q": "This giant statue in New York Harbor was a gift from France.", "a": "What is the Statue of Liberty?" },
+          { "q": "The holiday on July 4th that celebrates America's birthday.", "a": "What is Independence Day?" },
+          { "q": "The number of stripes on the American flag.", "a": "What is 13?" }
+        ]},
+        { "name": "Westward Expansion", "clues": [
+          { "q": "In 1804, President Jefferson sent these two explorers to map the West.", "a": "Who are Lewis and Clark?" },
+          { "q": "The 1803 land deal with France that doubled the size of the country.", "a": "What is the Louisiana Purchase?" },
+          { "q": "The Shoshone woman who helped guide Lewis and Clark.", "a": "Who is Sacagawea?" },
+          { "q": "The forced removal of the Cherokee to Indian Territory in the 1830s.", "a": "What is the Trail of Tears?" },
+          { "q": "The belief that the United States was meant to stretch from coast to coast.", "a": "What is Manifest Destiny?" }
+        ]},
+        { "name": "Inventors and Innovators", "clues": [
+          { "q": "He flew a kite in a thunderstorm to study electricity.", "a": "Who is Benjamin Franklin?" },
+          { "q": "Eli Whitney's machine that pulled the seeds out of cotton.", "a": "What is the cotton gin?" },
+          { "q": "Samuel Morse's invention that sent messages along wires.", "a": "What is the telegraph?" },
+          { "q": "Robert Fulton is famous for making this kind of boat a success.", "a": "What is the steamboat?" },
+          { "q": "Finished in 1825, this waterway linked the Great Lakes to the Hudson River.", "a": "What is the Erie Canal?" }
+        ]}
+      ]
+    },
+    {
+      "categories": [
+        { "name": "The Civil War", "clues": [
+          { "q": "Lincoln's 1863 order declaring enslaved people in the Confederate states free.", "a": "What is the Emancipation Proclamation?" },
+          { "q": "This three-day battle in Pennsylvania in July 1863 is called the turning point of the war.", "a": "What is Gettysburg?" },
+          { "q": "The war began when Confederates fired on this fort in South Carolina.", "a": "What is Fort Sumter?" },
+          { "q": "Lee surrendered to Grant in 1865 at this Virginia village.", "a": "What is Appomattox Court House?" },
+          { "q": "Fought in September 1862, it is the bloodiest single day in American history.", "a": "What is Antietam?" }
+        ]},
+        { "name": "Presidents", "clues": [
+          { "q": "The second President, and the first to live in the White House.", "a": "Who is John Adams?" },
+          { "q": "His \"Doctrine\" warned European powers to stay out of the Americas.", "a": "Who is James Monroe?" },
+          { "q": "Nicknamed \"Old Hickory,\" he was the seventh President.", "a": "Who is Andrew Jackson?" },
+          { "q": "The only President of the 1800s to serve two terms that weren't back to back.", "a": "Who is Grover Cleveland?" },
+          { "q": "He died just one month after taking office in 1841.", "a": "Who is William Henry Harrison?" }
+        ]},
+        { "name": "Amendments and Reconstruction", "clues": [
+          { "q": "The amendment that abolished slavery.", "a": "What is the 13th Amendment?" },
+          { "q": "The amendment that guarantees citizenship and \"equal protection of the laws.\"", "a": "What is the 14th Amendment?" },
+          { "q": "The amendment saying the right to vote can't be denied because of race.", "a": "What is the 15th Amendment?" },
+          { "q": "Lincoln's successor, he was the first President to be impeached.", "a": "Who is Andrew Johnson?", "dd": true },
+          { "q": "This 1877 deal settled a disputed presidential election and ended Reconstruction.", "a": "What is the Compromise of 1877?" }
+        ]},
+        { "name": "Famous Americans", "kids": true, "clues": [
+          { "q": "According to legend, she sewed the first American flag.", "a": "Who is Betsy Ross?" },
+          { "q": "This silversmith made a famous midnight ride to warn that the British were coming.", "a": "Who is Paul Revere?" },
+          { "q": "She escaped slavery, then went back again and again to lead others to freedom.", "a": "Who is Harriet Tubman?" },
+          { "q": "This frontiersman blazed the Wilderness Road into Kentucky.", "a": "Who is Daniel Boone?" },
+          { "q": "He escaped slavery and became a famous speaker and writer against it.", "a": "Who is Frederick Douglass?" }
+        ]},
+        { "name": "The Road to War", "clues": [
+          { "q": "The secret network of routes and safe houses that helped enslaved people escape north.", "a": "What is the Underground Railroad?" },
+          { "q": "Harriet Beecher Stowe's novel that turned many Northerners against slavery.", "a": "What is Uncle Tom's Cabin?" },
+          { "q": "The 1857 Supreme Court case that ruled enslaved people were not citizens.", "a": "What is Dred Scott v. Sandford?", "dd": true },
+          { "q": "The abolitionist who raided the armory at Harpers Ferry in 1859.", "a": "Who is John Brown?" },
+          { "q": "This 1854 law let settlers vote on slavery, leading to \"Bleeding Kansas.\"", "a": "What is the Kansas-Nebraska Act?" }
+        ]},
+        { "name": "Wars and Treaties", "clues": [
+          { "q": "During the War of 1812, Francis Scott Key wrote the poem that became this.", "a": "What is \"The Star-Spangled Banner\"?" },
+          { "q": "Andrew Jackson's famous 1815 victory, won after the peace treaty had already been signed.", "a": "What is the Battle of New Orleans?" },
+          { "q": "Davy Crockett and Jim Bowie died defending this Texas mission in 1836.", "a": "What is the Alamo?" },
+          { "q": "The 1848 treaty that ended the Mexican-American War.", "a": "What is the Treaty of Guadalupe Hidalgo?" },
+          { "q": "This 1853 land deal with Mexico completed the borders of the lower 48 states.", "a": "What is the Gadsden Purchase?" }
+        ]}
+      ]
+    }
+  ],
+  "final": {
+    "category": "Founding Fathers",
+    "clue": "Called the \"Father of the Constitution,\" he later became the fourth President.",
+    "answer": "Who is James Madison?"
+  }
+}

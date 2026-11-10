@@ -1,0 +1,103 @@
+{
+  "subject": "Bible",
+  "edition": "Game 1",
+  "rounds": [
+    {
+      "categories": [
+        { "name": "In the Beginning", "clues": [
+          { "q": "God made the world in this many days, then rested on the seventh.", "a": "What is six?" },
+          { "q": "The first man and woman.", "a": "Who are Adam and Eve?" },
+          { "q": "The beautiful garden where they lived.", "a": "What is the Garden of Eden?" },
+          { "q": "Adam and Eve's son who killed his brother Abel.", "a": "Who is Cain?" },
+          { "q": "He lived longer than anyone else in the Bible: 969 years.", "a": "Who is Methuselah?" }
+        ]},
+        { "name": "Noah and the Patriarchs", "clues": [
+          { "q": "Noah built this giant boat to survive the flood.", "a": "What is the ark?" },
+          { "q": "God promised Abraham that his descendants would be as many as these in the sky.", "a": "What are the stars?" },
+          { "q": "The son born to Abraham and Sarah when they were very old.", "a": "Who is Isaac?" },
+          { "q": "Jacob's twin brother, who sold his birthright for a bowl of stew.", "a": "Who is Esau?" },
+          { "q": "After Jacob wrestled with God, he was given this new name.", "a": "What is Israel?" }
+        ]},
+        { "name": "Bible Animals", "kids": true, "clues": [
+          { "q": "The sneaky animal that tricked Eve in the garden.", "a": "What is a serpent (a snake)?" },
+          { "q": "Jonah was swallowed by a great big one of these.", "a": "What is a fish?" },
+          { "q": "Daniel was thrown into a den full of these.", "a": "What are lions?" },
+          { "q": "Noah sent out this bird, and it came back with an olive leaf.", "a": "What is a dove?" },
+          { "q": "Balaam's animal, which spoke to him.", "a": "What is a donkey?" }
+        ]},
+        { "name": "Moses and the Exodus", "clues": [
+          { "q": "Baby Moses was hidden in a basket in this river.", "a": "What is the Nile?" },
+          { "q": "God spoke to Moses from this.", "a": "What is a burning bush?" },
+          { "q": "The number of plagues God sent on Egypt.", "a": "What is ten?" },
+          { "q": "The bread from heaven that fed the Israelites in the wilderness.", "a": "What is manna?" },
+          { "q": "Moses' sister, who led the women in song after they crossed the Red Sea.", "a": "Who is Miriam?" }
+        ]},
+        { "name": "Kings and Heroes", "clues": [
+          { "q": "The shepherd boy who defeated the giant Goliath.", "a": "Who is David?" },
+          { "q": "This judge was super strong as long as he didn't cut his hair.", "a": "Who is Samson?" },
+          { "q": "David's son, famous for his wisdom, who built the Temple.", "a": "Who is Solomon?" },
+          { "q": "The first king of Israel.", "a": "Who is Saul?", "dd": true },
+          { "q": "This judge defeated the Midianites with only 300 men.", "a": "Who is Gideon?" }
+        ]},
+        { "name": "The Life of Jesus", "clues": [
+          { "q": "The town where Jesus was born.", "a": "What is Bethlehem?" },
+          { "q": "Jesus' mother.", "a": "Who is Mary?" },
+          { "q": "The man who baptized Jesus in the Jordan River.", "a": "Who is John the Baptist?" },
+          { "q": "At a wedding in Cana, Jesus' first miracle turned water into this.", "a": "What is wine?" },
+          { "q": "Jesus raised this friend from the dead after four days in the tomb.", "a": "Who is Lazarus?" }
+        ]}
+      ]
+    },
+    {
+      "categories": [
+        { "name": "The Disciples", "clues": [
+          { "q": "The disciple who betrayed Jesus for thirty pieces of silver.", "a": "Who is Judas Iscariot?" },
+          { "q": "The disciple who denied knowing Jesus three times.", "a": "Who is Peter?" },
+          { "q": "The disciple who wouldn't believe until he saw Jesus' wounds.", "a": "Who is Thomas?" },
+          { "q": "Before following Jesus, Matthew did this job.", "a": "What is tax collector?" },
+          { "q": "The man chosen to replace Judas among the twelve.", "a": "Who is Matthias?" }
+        ]},
+        { "name": "Parables", "clues": [
+          { "q": "In this parable, a beaten traveler is helped by a man from Samaria.", "a": "What is the Good Samaritan?" },
+          { "q": "The parable of the younger son who wasted his inheritance, then came home.", "a": "What is the Prodigal Son?" },
+          { "q": "Jesus compared the kingdom of heaven to this tiny seed that grows into a large plant.", "a": "What is a mustard seed?" },
+          { "q": "In the parable of the sower, the seed that falls here is eaten by birds.", "a": "What is the path (the wayside)?" },
+          { "q": "The parable of the wise and foolish young women waiting with their lamps for the bridegroom.", "a": "What is the parable of the ten virgins?" }
+        ]},
+        { "name": "Prophets", "clues": [
+          { "q": "This prophet was taken up to heaven in a whirlwind, with a chariot of fire.", "a": "Who is Elijah?" },
+          { "q": "God sent Jonah to warn this great city.", "a": "What is Nineveh?" },
+          { "q": "Elijah defeated the prophets of Baal on this mountain.", "a": "What is Mount Carmel?", "dd": true },
+          { "q": "Elijah's successor, who asked for a double portion of his spirit.", "a": "Who is Elisha?" },
+          { "q": "The prophet who saw a valley of dry bones come back to life.", "a": "Who is Ezekiel?" }
+        ]},
+        { "name": "Who Am I?", "kids": true, "clues": [
+          { "q": "I built an ark and filled it with animals.", "a": "Who is Noah?" },
+          { "q": "I ran away from God and ended up inside a big fish.", "a": "Who is Jonah?" },
+          { "q": "I was a short tax collector who climbed a tree to see Jesus.", "a": "Who is Zacchaeus?" },
+          { "q": "I was a queen who bravely saved my people.", "a": "Who is Esther?" },
+          { "q": "As a boy, I heard God call me in the night and said, \"Speak, for your servant hears.\"", "a": "Who is Samuel?" }
+        ]},
+        { "name": "Paul and the Early Church", "clues": [
+          { "q": "Paul was blinded by a bright light on the road to this city.", "a": "What is Damascus?" },
+          { "q": "On this day, the Holy Spirit came down like tongues of fire.", "a": "What is Pentecost?" },
+          { "q": "The first Christian martyr, who was stoned to death.", "a": "Who is Stephen?" },
+          { "q": "Paul and Silas sang hymns in prison in this city until an earthquake opened the doors.", "a": "What is Philippi?", "dd": true },
+          { "q": "The island where Paul was shipwrecked and bitten by a snake.", "a": "What is Malta?" }
+        ]},
+        { "name": "Books of the Bible", "clues": [
+          { "q": "The first book of the Bible.", "a": "What is Genesis?" },
+          { "q": "The last book of the Bible.", "a": "What is Revelation?" },
+          { "q": "The book of songs and poems, many of them written by David.", "a": "What is Psalms?" },
+          { "q": "The Gospel writer who was a doctor.", "a": "Who is Luke?" },
+          { "q": "The shortest book in the Old Testament.", "a": "What is Obadiah?" }
+        ]}
+      ]
+    }
+  ],
+  "final": {
+    "category": "Faithful Friends",
+    "clue": "Ruth told her mother-in-law, \"Where you go, I will go.\" Name the mother-in-law.",
+    "answer": "Who is Naomi?"
+  }
+}
