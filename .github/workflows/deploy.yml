@@ -44,6 +44,20 @@ jobs:
       - name: Check the server code parses
         run: node --check server.js
 
+      # Debug: print the identity GitHub presents to AWS, so it can be matched against the
+      # role's trust policy. Only the claims are printed, never the token itself.
+      - name: Show the OIDC identity (debug)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const token = await core.getIDToken('sts.amazonaws.com');
+            const claims = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
+            core.info('sub: ' + claims.sub);
+            core.info('aud: ' + claims.aud);
+            core.info('role variable: [' + process.env.ROLE + ']');
+        env:
+          ROLE: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+
       # Swap GitHub's OIDC token for temporary AWS credentials (pinned to a commit, as GitHub's docs show).
       - name: Get temporary AWS credentials
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
