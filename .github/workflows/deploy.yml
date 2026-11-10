@@ -1,5 +1,5 @@
 # Jeopardy Night - continuous delivery to EC2 (the Hobby Lobby app server)
-# Every push to main: the server pulls the new code, restarts the game, then we health-check it.
+# Every push to master: the server pulls the new code, restarts the game, then we health-check it.
 #
 # No keys or passwords are stored for this. GitHub gives each run a short-lived
 # OIDC token; AWS swaps it for the temporary deploy role, which may run commands

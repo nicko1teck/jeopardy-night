@@ -1,0 +1,103 @@
+{
+  "subject": "Mission Impossible",
+  "edition": "Game 1",
+  "rounds": [
+    {
+      "categories": [
+        { "name": "Should You Choose to Accept It", "kids": true, "clues": [
+          { "q": "The actor who plays Ethan Hunt.", "a": "Who is Tom Cruise?" },
+          { "q": "IMF stands for Impossible Mission this.", "a": "What is Force?" },
+          { "q": "A few seconds after Ethan hears his mission, the message does this.", "a": "What is self-destruct?" },
+          { "q": "The IMF wears these lifelike rubber faces to look like someone else.", "a": "What are masks?" },
+          { "q": "The IMF's tech genius, played by Simon Pegg.", "a": "Who is Benji Dunn?" }
+        ]},
+        { "name": "The Team", "clues": [
+          { "q": "Ethan's hacker friend, played by Ving Rhames.", "a": "Who is Luther Stickell?" },
+          { "q": "The British agent, played by Rebecca Ferguson, who keeps everyone guessing whose side she's on.", "a": "Who is Ilsa Faust?" },
+          { "q": "The analyst, played by Jeremy Renner, who joins the team in Ghost Protocol.", "a": "Who is William Brandt?" },
+          { "q": "The expert pickpocket who joins the team in Dead Reckoning.", "a": "Who is Grace?" },
+          { "q": "Ethan's wife, who first appears in Mission: Impossible III.", "a": "Who is Julia?" }
+        ]},
+        { "name": "Villains", "clues": [
+          { "q": "In the first film, Ethan's own team leader turns out to be the traitor.", "a": "Who is Jim Phelps?" },
+          { "q": "The cold-eyed leader of the Syndicate in Rogue Nation and Fallout.", "a": "Who is Solomon Lane?" },
+          { "q": "The artificial intelligence that becomes the enemy in Dead Reckoning.", "a": "What is the Entity?" },
+          { "q": "The CIA agent, played by Henry Cavill, who is secretly a bad guy in Fallout.", "a": "Who is August Walker?" },
+          { "q": "The arms dealer, played by Philip Seymour Hoffman, in Mission: Impossible III.", "a": "Who is Owen Davian?" }
+        ]},
+        { "name": "Stunts", "clues": [
+          { "q": "In Ghost Protocol, Ethan climbs the outside of this, the world's tallest building, in Dubai.", "a": "What is the Burj Khalifa?" },
+          { "q": "In Rogue Nation, Ethan clings to the outside door of one of these as it takes off.", "a": "What is an airplane?" },
+          { "q": "In Dead Reckoning, Ethan rides off a cliff in Norway, lets go of his bike, and opens one of these.", "a": "What is a parachute?" },
+          { "q": "In Fallout, Ethan makes this kind of very high night jump out of a plane, opening his parachute at the last moment.", "a": "What is a HALO jump?", "dd": true },
+          { "q": "In the first film, Ethan is lowered on wires into a white vault at the headquarters of this agency.", "a": "What is the CIA (at Langley)?" }
+        ]},
+        { "name": "Around the World", "clues": [
+          { "q": "In Ghost Protocol, a bomb blows up part of this famous Moscow fortress.", "a": "What is the Kremlin?" },
+          { "q": "In Dead Reckoning, Ethan and Grace race a little yellow car through the streets of this Italian city.", "a": "What is Rome?" },
+          { "q": "In Rogue Nation, there is an assassination attempt at the opera in this Austrian city.", "a": "What is Vienna?" },
+          { "q": "Fallout ends with a helicopter chase through the mountains of this region.", "a": "What is Kashmir?" },
+          { "q": "The first film ends with a fight on a high-speed train inside this tunnel under the sea.", "a": "What is the Channel Tunnel (the Chunnel)?" }
+        ]},
+        { "name": "Mission: Impossible 2 and III", "clues": [
+          { "q": "MI2's deadly virus is named after this fire-breathing monster from Greek myth.", "a": "What is Chimera?" },
+          { "q": "MI2 opens with Ethan climbing a sheer rock cliff with no ropes in this US state.", "a": "What is Utah?" },
+          { "q": "The cure for the Chimera virus is named after this Greek hero, who killed the Chimera.", "a": "Who is Bellerophon?" },
+          { "q": "In MI:III, everyone is after a mysterious item with this lucky nickname.", "a": "What is the Rabbit's Foot?" },
+          { "q": "The director of MI:III, who later directed Star Wars: The Force Awakens.", "a": "Who is J.J. Abrams?" }
+        ]}
+      ]
+    },
+    {
+      "categories": [
+        { "name": "Ghost Protocol", "clues": [
+          { "q": "Under Ghost Protocol, the whole IMF is shut down and Ethan's team is this: cut off and denied.", "a": "What is disavowed?" },
+          { "q": "The agent played by Paula Patton.", "a": "Who is Jane Carter?" },
+          { "q": "On the Burj Khalifa, the climbing gloves follow the rule: \"Blue is glue, red is\" this.", "a": "What is dead?" },
+          { "q": "The villain's code name, also the name of a blue metal.", "a": "What is Cobalt?" },
+          { "q": "Ghost Protocol was the first live-action film by the director of The Incredibles.", "a": "Who is Brad Bird?" }
+        ]},
+        { "name": "Rogue Nation", "clues": [
+          { "q": "The secret network of rogue spies Ethan hunts in Rogue Nation.", "a": "What is the Syndicate?" },
+          { "q": "The CIA director, played by Alec Baldwin, who wants to shut the IMF down.", "a": "Who is Alan Hunley?" },
+          { "q": "To swap a security profile, Ethan must hold his breath for about three minutes in an underwater tank in this country.", "a": "What is Morocco?", "dd": true },
+          { "q": "At the end, Lane traps Benji by strapping one of these to him.", "a": "What is a bomb (vest)?" },
+          { "q": "Rogue Nation starts the run of Mission films directed by this man.", "a": "Who is Christopher McQuarrie?" }
+        ]},
+        { "name": "Fallout", "clues": [
+          { "q": "The team must stop terrorists from getting three cores of this radioactive material.", "a": "What is plutonium?" },
+          { "q": "Lane's followers call themselves this.", "a": "Who are the Apostles?" },
+          { "q": "The famous bathroom fight in Fallout happens at a party in this city.", "a": "What is Paris?" },
+          { "q": "The arms dealer called the White Widow is the daughter of this woman from the first film.", "a": "Who is Max?" },
+          { "q": "Jumping between rooftops in London, Tom Cruise really broke this part of his body.", "a": "What is his ankle?" }
+        ]},
+        { "name": "Name That Vehicle", "kids": true, "clues": [
+          { "q": "Ethan rides one of these in almost every film, crouched low at top speed.", "a": "What is a motorcycle?" },
+          { "q": "Ethan flies one of these himself in Fallout's mountain chase.", "a": "What is a helicopter?" },
+          { "q": "In Ghost Protocol, Ethan drives right into one of these giant dust storms in Dubai.", "a": "What is a sandstorm?" },
+          { "q": "In The Final Reckoning, Ethan clings to the wings of this old-fashioned plane with two sets of wings.", "a": "What is a biplane?" },
+          { "q": "The little yellow car Ethan and Grace drive through Rome is this Italian brand.", "a": "What is Fiat (a Fiat 500)?" }
+        ]},
+        { "name": "The Reckoning Films", "clues": [
+          { "q": "Dead Reckoning ends aboard this famous luxury train.", "a": "What is the Orient Express?" },
+          { "q": "The two-piece key everyone chases in Dead Reckoning is shaped like this.", "a": "What is a cross?" },
+          { "q": "The Entity's human servant, played by Esai Morales.", "a": "Who is Gabriel?" },
+          { "q": "In The Final Reckoning, Ethan dives to the wreck of this Russian submarine.", "a": "What is the Sevastopol?" },
+          { "q": "In The Final Reckoning, this teammate stays behind to stop a nuclear bomb, giving his life.", "a": "Who is Luther?" }
+        ]},
+        { "name": "Behind the Scenes", "clues": [
+          { "q": "Tom Cruise is famous for doing these himself instead of using a double.", "a": "What are his own stunts?" },
+          { "q": "Mission: Impossible began as a TV show in this decade.", "a": "What is the 1960s?" },
+          { "q": "He wrote the famous Mission: Impossible theme music.", "a": "Who is Lalo Schifrin?" },
+          { "q": "Christopher McQuarrie directed this many Mission films in a row.", "a": "What is four?", "dd": true },
+          { "q": "The director of the very first Mission: Impossible film, in 1996.", "a": "Who is Brian De Palma?" }
+        ]}
+      ]
+    }
+  ],
+  "final": {
+    "category": "The First Mission",
+    "clue": "In the first film, the stolen list of secret agents is called the NOC list. NOC stands for this.",
+    "answer": "What is Non-Official Cover?"
+  }
+}
