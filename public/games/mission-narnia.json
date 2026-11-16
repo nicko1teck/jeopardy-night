@@ -4,94 +4,352 @@
     {
       "name": "Jeopardy",
       "categories": [
-        {"name": "Your Mission, Should You Choose to Accept It", "clues": [
-          {"value": 200, "clue": "Your mission: fly west on a winged horse and bring back one piece of fruit from a walled garden, without tasting it yourself.", "answer": "What is the silver apple (the Apple of Protection)?"},
-          {"value": 400, "clue": "Your mission: depose Governor Gumpas and shut down the slave market on these islands.", "answer": "What are the Lone Islands?"},
-          {"value": 600, "clue": "Your mission: run ahead across the desert and warn this man that Rabadash is coming. Your rendezvous: a hermit's enclosure on the way.", "answer": "Who is King Lune?"},
-          {"value": 800, "clue": "Your handler in Tashbaan: this old friend of the Pevensies devises the escape plan for Queen Susan's party.", "answer": "Who is Mr. Tumnus?"},
-          {"value": 1000, "clue": "Your mission: break the sleep of three lords slumped at a feast on the edge of the world. Do not touch this object lying on the table.", "answer": "What is the Stone Knife?"}
-        ]},
-        {"name": "Disavowed", "clues": [
-          {"value": 200, "clue": "Accused of being the mole in a Prague restaurant, Ethan escapes by setting this off by a giant fish tank.", "answer": "What is exploding gum?"},
-          {"value": 400, "clue": "Caspian's danger begins the night his aunt, Queen Prunaprismia, does this.", "answer": "What is give birth to a son?"},
-          {"value": 600, "clue": "The real mole, who faked his own death, is finally exposed aboard this.", "answer": "What is the TGV (Channel Tunnel train)?"},
-          {"value": 800, "clue": "This Dwarf leads the cynics who declare, 'The Dwarfs are for the Dwarfs.'", "answer": "Who is Griffle?"},
-          {"value": 1000, "clue": "In Rogue Nation, this MI6 chief disavows Ilsa, though the Syndicate was his idea in the first place.", "answer": "Who is Atlee?"}
-        ]},
-        {"name": "Rhyme Time", "clues": [
-          {"value": 200, "clue": "A chickpea dip served at tea by Lucy's first Narnian friend.", "answer": "What is Tumnus's hummus?"},
-          {"value": 400, "clue": "The cliff jumps, plane hangs and helicopter chases of the IMF's top agent.", "answer": "What are Hunt's stunts?"},
-          {"value": 600, "clue": "Presents handed out by the scheming ape of The Last Battle.", "answer": "What are Shift's gifts?"},
-          {"value": 800, "clue": "The restraints keeping the Syndicate's captured leader in check.", "answer": "What are Lane's chains?"},
-          {"value": 1000, "clue": "A secret pile of money belonging to the vulture-headed god of Calormen.", "answer": "What is Tash's stash?"}
-        ]},
-        {"name": "Masks", "clues": [
-          {"value": 200, "clue": "The lion skin Shift uses for his fake Aslan first turns up floating in this pool.", "answer": "What is Caldron Pool?"},
-          {"value": 400, "clue": "Running from an arranged marriage, Aravis disguises herself in armor belonging to this family member.", "answer": "Who is her brother?"},
-          {"value": 600, "clue": "The Lady of the Green Kirtle's silent companion, a knight in black armor, is really this lost prince.", "answer": "Who is Rilian?"},
-          {"value": 800, "dailyDouble": true, "clue": "In Fallout, a famous TV news anchor 'interviewing' a captive is really this IMF agent in a mask.", "answer": "Who is Benji Dunn?"},
-          {"value": 1000, "clue": "At the Vatican in M:I III, Ethan puts on a mask to pass as this arms dealer.", "answer": "Who is Owen Davian?"}
-        ]},
-        {"name": "This Message Will Self-Destruct", "clues": [
-          {"value": 200, "clue": "When Aslan rose, the Stone Table did this.", "answer": "What is crack (in two)?"},
-          {"value": 400, "clue": "In M:I-2, Ethan's briefing self-destructs inside these.", "answer": "What are sunglasses?"},
-          {"value": 600, "clue": "At Narnia's end, this giant wakes and blows his horn, and the stars fall.", "answer": "Who is Father Time?"},
-          {"value": 800, "clue": "In Rogue Nation, Ethan's London briefing plays on this format.", "answer": "What is a vinyl record?"},
-          {"value": 1000, "clue": "In Ghost Protocol, when the payphone message fails to self-destruct, Ethan does this.", "answer": "What is hit (thump) the phone?"}
-        ]},
-        {"name": "Reepicheep or Benji?", "clues": [
-          {"value": 200, "clue": "Lost his tail in battle.", "answer": "Who is Reepicheep?"},
-          {"value": 400, "clue": "First appears as a lab tech who never leaves headquarters.", "answer": "Who is Benji?"},
-          {"value": 600, "clue": "A dryad promised him a destiny 'where sky and water meet.'", "answer": "Who is Reepicheep?"},
-          {"value": 800, "clue": "Wore a bomb strapped to his body in a finale.", "answer": "Who is Benji?"},
-          {"value": 1000, "clue": "Paddled off alone in a coracle.", "answer": "Who is Reepicheep?"}
-        ]}
+        {
+          "name": "Your Mission, Should You Choose to Accept It",
+          "clues": [
+            {
+              "value": 200,
+              "q": "Your mission: fly west on a winged horse and bring back one piece of fruit from a walled garden, without tasting it yourself.",
+              "a": "What is the silver apple (the Apple of Protection)?"
+            },
+            {
+              "value": 400,
+              "q": "Your mission: depose Governor Gumpas and shut down the slave market on these islands.",
+              "a": "What are the Lone Islands?"
+            },
+            {
+              "value": 600,
+              "q": "Your mission: run ahead across the desert and warn this man that Rabadash is coming. Your rendezvous: a hermit's enclosure on the way.",
+              "a": "Who is King Lune?"
+            },
+            {
+              "value": 800,
+              "q": "Your handler in Tashbaan: this old friend of the Pevensies devises the escape plan for Queen Susan's party.",
+              "a": "Who is Mr. Tumnus?"
+            },
+            {
+              "value": 1000,
+              "q": "Your mission: break the sleep of three lords slumped at a feast on the edge of the world. Do not touch this object lying on the table.",
+              "a": "What is the Stone Knife?"
+            }
+          ]
+        },
+        {
+          "name": "Disavowed",
+          "clues": [
+            {
+              "value": 200,
+              "q": "Accused of being the mole in a Prague restaurant, Ethan escapes by setting this off by a giant fish tank.",
+              "a": "What is exploding gum?"
+            },
+            {
+              "value": 400,
+              "q": "Caspian's danger begins the night his aunt, Queen Prunaprismia, does this.",
+              "a": "What is give birth to a son?"
+            },
+            {
+              "value": 600,
+              "q": "The real mole, who faked his own death, is finally exposed aboard this.",
+              "a": "What is the TGV (Channel Tunnel train)?"
+            },
+            {
+              "value": 800,
+              "q": "This Dwarf leads the cynics who declare, 'The Dwarfs are for the Dwarfs.'",
+              "a": "Who is Griffle?"
+            },
+            {
+              "value": 1000,
+              "q": "In Rogue Nation, this MI6 chief disavows Ilsa, though the Syndicate was his idea in the first place.",
+              "a": "Who is Atlee?"
+            }
+          ]
+        },
+        {
+          "name": "Rhyme Time",
+          "clues": [
+            {
+              "value": 200,
+              "q": "A chickpea dip served at tea by Lucy's first Narnian friend.",
+              "a": "What is Tumnus's hummus?"
+            },
+            {
+              "value": 400,
+              "q": "The cliff jumps, plane hangs and helicopter chases of the IMF's top agent.",
+              "a": "What are Hunt's stunts?"
+            },
+            {
+              "value": 600,
+              "q": "Presents handed out by the scheming ape of The Last Battle.",
+              "a": "What are Shift's gifts?"
+            },
+            {
+              "value": 800,
+              "q": "The restraints keeping the Syndicate's captured leader in check.",
+              "a": "What are Lane's chains?"
+            },
+            {
+              "value": 1000,
+              "q": "A secret pile of money belonging to the vulture-headed god of Calormen.",
+              "a": "What is Tash's stash?"
+            }
+          ]
+        },
+        {
+          "name": "Masks",
+          "clues": [
+            {
+              "value": 200,
+              "q": "The lion skin Shift uses for his fake Aslan first turns up floating in this pool.",
+              "a": "What is Caldron Pool?"
+            },
+            {
+              "value": 400,
+              "q": "Running from an arranged marriage, Aravis disguises herself in armor belonging to this family member.",
+              "a": "Who is her brother?"
+            },
+            {
+              "value": 600,
+              "q": "The Lady of the Green Kirtle's silent companion, a knight in black armor, is really this lost prince.",
+              "a": "Who is Rilian?"
+            },
+            {
+              "value": 800,
+              "dailyDouble": true,
+              "q": "In Fallout, a famous TV news anchor 'interviewing' a captive is really this IMF agent in a mask.",
+              "a": "Who is Benji Dunn?"
+            },
+            {
+              "value": 1000,
+              "q": "At the Vatican in M:I III, Ethan puts on a mask to pass as this arms dealer.",
+              "a": "Who is Owen Davian?"
+            }
+          ]
+        },
+        {
+          "name": "This Message Will Self-Destruct",
+          "clues": [
+            {
+              "value": 200,
+              "q": "When Aslan rose, the Stone Table did this.",
+              "a": "What is crack (in two)?"
+            },
+            {
+              "value": 400,
+              "q": "In M:I-2, Ethan's briefing self-destructs inside these.",
+              "a": "What are sunglasses?"
+            },
+            {
+              "value": 600,
+              "q": "At Narnia's end, this giant wakes and blows his horn, and the stars fall.",
+              "a": "Who is Father Time?"
+            },
+            {
+              "value": 800,
+              "q": "In Rogue Nation, Ethan's London briefing plays on this format.",
+              "a": "What is a vinyl record?"
+            },
+            {
+              "value": 1000,
+              "q": "In Ghost Protocol, when the payphone message fails to self-destruct, Ethan does this.",
+              "a": "What is hit (thump) the phone?"
+            }
+          ]
+        },
+        {
+          "name": "Reepicheep or Benji?",
+          "clues": [
+            {
+              "value": 200,
+              "q": "Lost his tail in battle.",
+              "a": "Who is Reepicheep?"
+            },
+            {
+              "value": 400,
+              "q": "First appears as a lab tech who never leaves headquarters.",
+              "a": "Who is Benji?"
+            },
+            {
+              "value": 600,
+              "q": "A dryad promised him a destiny 'where sky and water meet.'",
+              "a": "Who is Reepicheep?"
+            },
+            {
+              "value": 800,
+              "q": "Wore a bomb strapped to his body in a finale.",
+              "a": "Who is Benji?"
+            },
+            {
+              "value": 1000,
+              "q": "Paddled off alone in a coracle.",
+              "a": "Who is Reepicheep?"
+            }
+          ]
+        }
       ]
     },
     {
       "name": "Double Jeopardy",
       "categories": [
-        {"name": "Dossiers", "clues": [
-          {"value": 400, "clue": "Subject: Marsh-wiggle. Stamped out an enchantress's fire with his bare foot.", "answer": "Who is Puddleglum?"},
-          {"value": 800, "clue": "Subject: hacker. Only agent besides Ethan to appear in every film.", "answer": "Who is Luther Stickell?"},
-          {"value": 1200, "clue": "Subject: Archenland prince. Known for settling things with his fists.", "answer": "Who is Corin (Thunder-Fist)?"},
-          {"value": 1600, "clue": "Subject: ex-MI6, leads the Syndicate. Captured in a glass box.", "answer": "Who is Solomon Lane?"},
-          {"value": 2000, "dailyDouble": true, "clue": "Subject: Calormene officer. Served Tash all his life, yet Aslan welcomed him.", "answer": "Who is Emeth?"}
-        ]},
-        {"name": "Safe Houses", "clues": [
-          {"value": 400, "clue": "Narnia's royal seat at the mouth of the Great River.", "answer": "What is Cair Paravel?"},
-          {"value": 800, "clue": "Ghost Protocol sends Ethan up the outside of this Dubai tower.", "answer": "What is the Burj Khalifa?"},
-          {"value": 1200, "clue": "The giants' castle where Jill, Eustace and Puddleglum nearly become dinner.", "answer": "What is Harfang?"},
-          {"value": 1600, "clue": "Rogue Nation opens with Ethan clinging to the outside of one of these.", "answer": "What is a cargo plane (Airbus A400M)?"},
-          {"value": 2000, "clue": "Fallout's climax is set in this disputed mountain region.", "answer": "What is Kashmir?"}
-        ]},
-        {"name": "Tech Support", "clues": [
-          {"value": 400, "clue": "Lucy's gift that heals with a single drop.", "answer": "What is the cordial?"},
-          {"value": 800, "clue": "Ethan breaks into Langley to steal this list.", "answer": "What is the NOC list?"},
-          {"value": 1200, "clue": "The two colors of Uncle Andrew's magic rings.", "answer": "What are yellow and green?"},
-          {"value": 1600, "dailyDouble": true, "clue": "Dead Reckoning's villain isn't a person but this rogue AI.", "answer": "What is the Entity?"},
-          {"value": 2000, "clue": "Eustace's dragon transformation leaves this object painfully stuck on his arm.", "answer": "What is a gold arm-ring (bracelet)?"}
-        ]},
-        {"name": "Impossible Odds", "clues": [
-          {"value": 400, "clue": "Peter's first kill: the captain of the Witch's secret police.", "answer": "Who is Maugrim?"},
-          {"value": 800, "clue": "Dead Reckoning's motorcycle cliff jump was filmed in this country.", "answer": "What is Norway?"},
-          {"value": 1200, "clue": "After Peter's duel, this Telmarine lord stabs Miraz in the back.", "answer": "Who is Glozelle?"},
-          {"value": 1600, "clue": "M:I-2 opens with Ethan free-climbing in this U.S. state.", "answer": "What is Utah?"},
-          {"value": 2000, "clue": "Aravis fled to avoid marrying this elderly Calormene grand vizier.", "answer": "Who is Ahoshta?"}
-        ]},
-        {"name": "By the Numbers", "clues": [
-          {"value": 400, "clue": "Years of winter under the White Witch.", "answer": "What is 100?"},
-          {"value": 800, "clue": "Lost lords the Dawn Treader sets out to find.", "answer": "What is seven?"},
-          {"value": 1200, "clue": "The year the first Mission: Impossible film was released.", "answer": "What is 1996?"},
-          {"value": 1600, "clue": "Signs Aslan gives Jill on the mountain.", "answer": "What is four?"},
-          {"value": 2000, "clue": "Roughly how many Narnian years pass between the Pevensies' first and second visits.", "answer": "What is about 1,300?"}
-        ]}
+        {
+          "name": "Dossiers",
+          "clues": [
+            {
+              "value": 400,
+              "q": "Subject: Marsh-wiggle. Stamped out an enchantress's fire with his bare foot.",
+              "a": "Who is Puddleglum?"
+            },
+            {
+              "value": 800,
+              "q": "Subject: hacker. Only agent besides Ethan to appear in every film.",
+              "a": "Who is Luther Stickell?"
+            },
+            {
+              "value": 1200,
+              "q": "Subject: Archenland prince. Known for settling things with his fists.",
+              "a": "Who is Corin (Thunder-Fist)?"
+            },
+            {
+              "value": 1600,
+              "q": "Subject: ex-MI6, leads the Syndicate. Captured in a glass box.",
+              "a": "Who is Solomon Lane?"
+            },
+            {
+              "value": 2000,
+              "dailyDouble": true,
+              "q": "Subject: Calormene officer. Served Tash all his life, yet Aslan welcomed him.",
+              "a": "Who is Emeth?"
+            }
+          ]
+        },
+        {
+          "name": "Safe Houses",
+          "clues": [
+            {
+              "value": 400,
+              "q": "Narnia's royal seat at the mouth of the Great River.",
+              "a": "What is Cair Paravel?"
+            },
+            {
+              "value": 800,
+              "q": "Ghost Protocol sends Ethan up the outside of this Dubai tower.",
+              "a": "What is the Burj Khalifa?"
+            },
+            {
+              "value": 1200,
+              "q": "The giants' castle where Jill, Eustace and Puddleglum nearly become dinner.",
+              "a": "What is Harfang?"
+            },
+            {
+              "value": 1600,
+              "q": "Rogue Nation opens with Ethan clinging to the outside of one of these.",
+              "a": "What is a cargo plane (Airbus A400M)?"
+            },
+            {
+              "value": 2000,
+              "q": "Fallout's climax is set in this disputed mountain region.",
+              "a": "What is Kashmir?"
+            }
+          ]
+        },
+        {
+          "name": "Tech Support",
+          "clues": [
+            {
+              "value": 400,
+              "q": "Lucy's gift that heals with a single drop.",
+              "a": "What is the cordial?"
+            },
+            {
+              "value": 800,
+              "q": "Ethan breaks into Langley to steal this list.",
+              "a": "What is the NOC list?"
+            },
+            {
+              "value": 1200,
+              "q": "The two colors of Uncle Andrew's magic rings.",
+              "a": "What are yellow and green?"
+            },
+            {
+              "value": 1600,
+              "dailyDouble": true,
+              "q": "Dead Reckoning's villain isn't a person but this rogue AI.",
+              "a": "What is the Entity?"
+            },
+            {
+              "value": 2000,
+              "q": "Eustace's dragon transformation leaves this object painfully stuck on his arm.",
+              "a": "What is a gold arm-ring (bracelet)?"
+            }
+          ]
+        },
+        {
+          "name": "Impossible Odds",
+          "clues": [
+            {
+              "value": 400,
+              "q": "Peter's first kill: the captain of the Witch's secret police.",
+              "a": "Who is Maugrim?"
+            },
+            {
+              "value": 800,
+              "q": "Dead Reckoning's motorcycle cliff jump was filmed in this country.",
+              "a": "What is Norway?"
+            },
+            {
+              "value": 1200,
+              "q": "After Peter's duel, this Telmarine lord stabs Miraz in the back.",
+              "a": "Who is Glozelle?"
+            },
+            {
+              "value": 1600,
+              "q": "M:I-2 opens with Ethan free-climbing in this U.S. state.",
+              "a": "What is Utah?"
+            },
+            {
+              "value": 2000,
+              "q": "Aravis fled to avoid marrying this elderly Calormene grand vizier.",
+              "a": "Who is Ahoshta?"
+            }
+          ]
+        },
+        {
+          "name": "By the Numbers",
+          "clues": [
+            {
+              "value": 400,
+              "q": "Years of winter under the White Witch.",
+              "a": "What is 100?"
+            },
+            {
+              "value": 800,
+              "q": "Lost lords the Dawn Treader sets out to find.",
+              "a": "What is seven?"
+            },
+            {
+              "value": 1200,
+              "q": "The year the first Mission: Impossible film was released.",
+              "a": "What is 1996?"
+            },
+            {
+              "value": 1600,
+              "q": "Signs Aslan gives Jill on the mountain.",
+              "a": "What is four?"
+            },
+            {
+              "value": 2000,
+              "q": "Roughly how many Narnian years pass between the Pevensies' first and second visits.",
+              "a": "What is about 1,300?"
+            }
+          ]
+        }
       ]
     }
   ],
   "final": {
     "category": "Double Agent",
     "clue": "This actor took a break from saving the world in order to sail to the end of it.",
-    "answer": "Who is Simon Pegg?"
+    "answer": "Who is Simon Pegg?",
+    "q": "This actor took a break from saving the world in order to sail to the end of it.",
+    "a": "Who is Simon Pegg?"
   }
 }
